@@ -2,10 +2,10 @@ Combat Simulator
 ================
 This is a combat simulator for the Deception spec of the Sith Assassin class in SWTOR.
 
-I created this program as a means to test how things such as stats and balance changes would affect
+I created this program as a means to test how things such as gear and balance changes affect
 the DPS of Deception.
 
-For testing stat changes it is far more accurate than parsing within the game because it removes
+For testing gear changes it is far more accurate than parsing within the game because it removes
 human error and RNG variance from the results. The average DPS will change by less than 0.005%
 between runs when using 1,000,000 iterations.
 
@@ -54,7 +54,7 @@ Some options cause others to be ignored:
 -h will ignore everything else
 -c will ignore -m
 -g will ignore -c -m -p -H*
-    -H will only apply to the DPS distribution chart, the DPS scaling chart is not affected.
+    *-H will only apply to the DPS distribution chart, the DPS scaling chart is not affected.
 
 
 Making changes
@@ -76,7 +76,7 @@ Known Issues
 1. The simulator is currently unable to handle nonzero alacrity.
 2. Changing the character stats requires recompiling the program.
 3. The default iteration count may cause the simulation to take a long time on slower machines.
-4. The progress indicator may show values above 100% for some values of iteration count.
+4. The progress messages may show values above 100% for some values of iteration count.
 
 
 To-do list

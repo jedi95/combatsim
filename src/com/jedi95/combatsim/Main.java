@@ -268,7 +268,7 @@ public class Main {
 		targetHP = 1000000.0; //1M
 		run();
 		dps_chart.addValue(finalStats.getDPS(), "Live", "1M");
-		targetHP = 1500000.0; //1M
+		targetHP = 1500000.0; //1.5M
 		run();
 		dps_chart.addValue(finalStats.getDPS(), "Live", "1.5M");
 
@@ -286,7 +286,7 @@ public class Main {
 		targetHP = 1000000.0; //1M
 		run();
 		dps_chart.addValue(finalStats.getDPS(), "Mod", "1M");
-		targetHP = 1500000.0; //1M
+		targetHP = 1500000.0; //1.5M
 		run();
 		dps_chart.addValue(finalStats.getDPS(), "Mod", "1.5M");
 
