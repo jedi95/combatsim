@@ -34,7 +34,7 @@ public class SurgingChargeMod extends Proc {
 	//Effect constants
 	public static final String NAME = "Surging Charge";
 	public static final int COOLDOWN = 4500; //in ms
-	public static final double CHANCE = 0.25;
+	public static final double CHANCE = 0.30;
 	public static final int SABER_CONDUIT_ICD = 9000;
 	public static final int SABER_CONDUIT_FORCE = 10 * Calc.FORCE_MULTI;
 

@@ -15,6 +15,7 @@ This program includes a set of class balance changes that are aimed at increasin
 1. The base force cost of Voltaic Slash is reduced from 25 to 23
 2. The ICD of Saber Conduit is reduced from 10s to 9s
 3. Each stack of Voltage increases force critical chance by 5%
+4. The proc chance of Surging Charge is increased from 25% to 30%
 
 In my opinion, these changes would be enough to make Deception viable in all current PVE content. It will provide an alternative to Madness when burst or rapid target switching is required.
 
