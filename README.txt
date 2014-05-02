@@ -2,12 +2,9 @@ Combat Simulator
 ================
 This is a combat simulator for the Deception spec of the Sith Assassin class in SWTOR.
 
-I created this program as a means to test how things such as gear and balance changes affect
-the DPS of Deception.
+I created this program as a means to test how things such as gear and balance changes affect the DPS of Deception.
 
-For testing gear changes it is far more accurate than parsing within the game because it removes
-human error and RNG variance from the results. The average DPS will change by less than 0.005%
-between runs when using 1,000,000 iterations.
+For testing gear changes it is far more accurate than parsing within the game because it removes human error and RNG variance from the results. The average DPS will change by less than 0.005% between runs when using 1,000,000 iterations.
 
 For class balance changes it provides more realistic results than purely theoretical calculations.
 
@@ -19,8 +16,7 @@ This program includes a set of class balance changes that are aimed at increasin
 2. The ICD of Saber Conduit is reduced from 10s to 9s
 3. Each stack of Voltage increases force critical chance by 5%
 
-In my opinion, these changes would be enough to make Deception viable in all current PVE content.
-It will provide an alternative to Madness when burst or rapid target switching is required.
+In my opinion, these changes would be enough to make Deception viable in all current PVE content. It will provide an alternative to Madness when burst or rapid target switching is required.
 
 DISCLAIMER: These changes are only ideas, and they do not nessesarily reflect future class balance.
 
@@ -59,9 +55,7 @@ Some options cause others to be ignored:
 
 Making changes
 --------------
-If you want to test your own class balance changes or stat combinations I highly recommend using
-an IDE such as Eclipse that can build the project automatically. This will allow you to test quickly
-without manually recompiling the code.
+If you want to test your own class balance changes or stat combinations I highly recommend using an IDE such as Eclipse that can build the project automatically. This will allow you to test ideas quickly without manually recompiling the code.
 
 
 Dependencies
@@ -87,9 +81,7 @@ To-do list
 
 Balance change test requests
 ----------------------------
-I understand that not every player will know how to modify this program to test their ideas for
-class balance changes. If you have an idea that you would like me to implement and test, contact me
-via email or ingame.
+I understand that not every player will know how to modify this program to test their ideas for class balance changes. If you have an idea that you would like me to implement and test, contact me via email or ingame.
 
 
 Contact info
