@@ -86,6 +86,10 @@ public class SurgingChargeMod extends Proc {
 
 		//Apply damage
 		Hit hit = getHitDamage(player);
+		if (hit.crit) {
+			Effect es = player.getEffect("Exploitive Strikes");
+			es.addStacks(1, player.sim.time());
+		}
 		target.applyHit(hit);
 	}
 

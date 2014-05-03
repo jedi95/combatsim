@@ -110,17 +110,8 @@ public class Shock extends Ability {
 		Effect voltage = player.getEffect("Voltage");
 		if (voltage.isActive(player.sim.time())) {
 			if (player.random.nextDouble() <= (VOLTAGE_CHANCE * voltage.getStacks())) {
-				Effect staticCharge = player.getEffect("Static Charge");
-				staticCharge.addStacks(1, player.sim.time());
-
-				//Damage
-				Hit hit2 = player.getProc(2).getHitDamage(player);
-				//Handle ES
-				if (hit2.crit) {
-					Effect es = player.getEffect("Exploitive Strikes");
-					es.addStacks(1, player.sim.time());
-				}
-				target.applyHit(hit2);
+				//Surging Charge
+				player.getProc(2).handleProc(player, target, player.sim.time());
 			}
 		}
 
