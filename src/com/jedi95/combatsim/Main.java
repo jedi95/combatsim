@@ -251,8 +251,9 @@ public class Main {
 
 		System.out.println("Generating DPS Scaling chart...");
 
-		//Set up dataset
+		//Set up datasets
 		DefaultCategoryDataset dps_chart = new DefaultCategoryDataset();
+		DefaultCategoryDataset dps_improvement = new DefaultCategoryDataset();
 
 		//Generate live data
 		useMod = false;
@@ -290,22 +291,45 @@ public class Main {
 		run();
 		dps_chart.addValue(finalStats.getDPS(), "Mod", "1.5M");
 
-		//Create the chart
-		JFreeChart chart = ChartFactory.createLineChart("DPS Scaling", "Target HP", "Average DPS", dps_chart, PlotOrientation.VERTICAL, true, true, false);
+		//Generate percent improvement chart
+		double dpsPercent1 = (((Double) dps_chart.getValue("Mod", "100K") / (Double) dps_chart.getValue("Live", "100K")) - 1) * 100;
+		double dpsPercent2 = (((Double) dps_chart.getValue("Mod", "250K") / (Double) dps_chart.getValue("Live", "250K")) - 1) * 100;
+		double dpsPercent3 = (((Double) dps_chart.getValue("Mod", "500K") / (Double) dps_chart.getValue("Live", "500K")) - 1) * 100;
+		double dpsPercent4 = (((Double) dps_chart.getValue("Mod", "1M") / (Double) dps_chart.getValue("Live", "1M")) - 1) * 100;
+		double dpsPercent5 = (((Double) dps_chart.getValue("Mod", "1.5M") / (Double) dps_chart.getValue("Live", "1.5M")) - 1) * 100;
+
+		dps_improvement.addValue(dpsPercent1, "Difference", "100K");
+		dps_improvement.addValue(dpsPercent2, "Difference", "250K");
+		dps_improvement.addValue(dpsPercent3, "Difference", "500K");
+		dps_improvement.addValue(dpsPercent4, "Difference", "1M");
+		dps_improvement.addValue(dpsPercent5, "Difference", "1.5M");
+
+		//Create the charts
+		JFreeChart chart1 = ChartFactory.createLineChart("DPS Scaling", "Target HP", "Average DPS", dps_chart, PlotOrientation.VERTICAL, true, true, false);
+		JFreeChart chart2 = ChartFactory.createLineChart("DPS Scaling Percent", "Target HP", "Percent change", dps_improvement, PlotOrientation.VERTICAL, true, true, false);
 
 		//NOTE: bounds may need adjustment for larger changes
-		CategoryPlot plot = (CategoryPlot) chart.getPlot();
+		CategoryPlot plot = (CategoryPlot) chart1.getPlot();
 		plot.getRangeAxis().setLowerBound(3000);
 		plot.getRangeAxis().setUpperBound(5000);
 
 		//Output to file
-        File lineChart = new File("dps_scaling.png");              
-        try {
-			ChartUtilities.saveChartAsPNG(lineChart, chart, 1024, 768);
+		File lineChart1 = new File("dps_scaling.png");
+		try {
+			ChartUtilities.saveChartAsPNG(lineChart1, chart1, 1024, 768);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-        System.out.println("DPS Scaling chart saved to: " + lineChart.getAbsolutePath() + "\n");
+		System.out.println("DPS Scaling chart saved to: " + lineChart1.getAbsolutePath() + "\n");
+
+		//Output to file
+		File lineChart2 = new File("dps_scaling_percent.png");
+		try {
+			ChartUtilities.saveChartAsPNG(lineChart2, chart2, 1024, 768);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println("DPS Scaling Percent chart saved to: " + lineChart2.getAbsolutePath() + "\n");
 	}
 
 	public static void generateDPSDistribution() throws Exception {

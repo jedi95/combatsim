@@ -42,6 +42,10 @@ public class PowerAdrenal extends OffGCDAbility {
 			return true;
 		}
 		else {
+			//However, if we are very close to killing the target use anyway
+			if (target.getHealth() < 60000) {
+				return true;
+			}
 			return false;
 		}
 	}
