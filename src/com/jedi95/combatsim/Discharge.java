@@ -100,10 +100,8 @@ public class Discharge extends Ability {
 		{
 			return true;
 		}
-		else
-		{
-			return false;
-		}
+
+		return false;
 	}
 
 	//Need to override this to handle static charges increasing damage

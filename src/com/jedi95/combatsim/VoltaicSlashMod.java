@@ -85,7 +85,7 @@ public class VoltaicSlashMod extends Ability {
 			return true;
 		}
 		//If we will force cap
-		else if (player.sim.getForceRegen(Simulator.GCD_LENGTH) + (SaberStrike.SET_BONUS_FORCE_PER_HIT * SaberStrike.HIT_COUNT) >= Player.MAX_FORCE) {
+		else if (player.getForce() + player.sim.getForceRegen(Simulator.GCD_LENGTH) + (SaberStrike.SET_BONUS_FORCE_PER_HIT * SaberStrike.HIT_COUNT) >= Player.MAX_FORCE) {
 			return true;
 		}
 		//If voltage stacks will fall off within 3 GCD
