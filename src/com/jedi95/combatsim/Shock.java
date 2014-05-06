@@ -141,10 +141,6 @@ public class Shock extends Ability {
 			if (induction.isActive(time) && induction.getStacks() == 2) {
 				return true;
 			}
-			//If we are going to force cap
-			else if ((player.getForce() - getForceCost()) + player.sim.getForceRegen(Simulator.GCD_LENGTH) >= Player.MAX_FORCE) {
-				return true;
-			}
 		}
 
 		return false;

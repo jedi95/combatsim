@@ -61,4 +61,17 @@ public class Assassinate extends Ability {
 		//Call global handler
 		super.checkProcs(target, hit, hitCount);
 	}
+
+	public boolean shouldUse(Target target) {
+		if (!canUse(target)) {
+			return false;
+		}
+
+		Effect voltage = player.getEffect("Voltage");
+		//If voltage will fall off this GCD unless we use Voltaic Slash
+		if (voltage.getRemainingTime(player.sim.time()) <= Simulator.GCD_LENGTH) {
+			return false;
+		}
+		return true;
+	}
 }

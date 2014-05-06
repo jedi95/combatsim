@@ -113,13 +113,17 @@ public class Maul extends Ability {
 			else if (!(voltage.isActive(time) && voltage.getStacks() >= 2)) {
 				return false;
 			}
-			//If we are going to force cap then use maul
-			else if ((player.getForce() - getForceCost()) + player.sim.getForceRegen(Simulator.GCD_LENGTH) >= Player.MAX_FORCE) {
-				return true;
+			//If Voltage will fall off this GCD don't use maul
+			else if (voltage.getRemainingTime(time) <= Simulator.GCD_LENGTH) {
+				return false;
 			}
 			//If we don't have 2 induction stacks then use Maul
 			else if (!induction.isActive(time) || (induction.isActive(time) && induction.getStacks() < 2))
 			{
+				return true;
+			}
+			//If we will force cap
+			else if (player.sim.getForceRegen(Simulator.GCD_LENGTH) + (SaberStrike.SET_BONUS_FORCE_PER_HIT * SaberStrike.HIT_COUNT) >= Player.MAX_FORCE) {
 				return true;
 			}
 		}
