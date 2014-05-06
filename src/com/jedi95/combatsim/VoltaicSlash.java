@@ -93,8 +93,6 @@ public class VoltaicSlash extends Ability {
 			return true;
 		}
 		//Otherwise conserve force
-		else {
-			return false;
-		}
+		return false;
 	}
 }

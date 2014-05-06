@@ -92,9 +92,12 @@ public class VoltaicSlashMod extends Ability {
 		else if (voltage.getRemainingTime(time) <= Simulator.GCD_LENGTH * 3) {
 			return true;
 		}
-		//Otherwise conserve force
-		else {
-			return false;
+		//Don't use Saber Strike below 30% unless we run out of force completely.
+		//NOTE: This is a DPS gain w/changes but a very slight DPS loss without.
+		else if (target.getHealth() <= target.getMaxHealth() * Assassinate.USABLE_HP_PERCENT) {
+			return true;
 		}
+		//Otherwise conserve force
+		return false;
 	}
 }
