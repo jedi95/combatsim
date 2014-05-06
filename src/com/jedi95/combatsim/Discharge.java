@@ -41,11 +41,10 @@ public class Discharge extends Ability {
 	  1 charge = base damage * ~1 (working as intended)
 	  2 charges = base damage * ~3 (obviously wrong)
 	  3 charges = base damage * ~4 (obviously wrong)
-	  As a result, I consider the inner workings of the damage calculation a "black box"
 	  Since the simulator will only ever use Discharge with 3 static charges,
-	  I have accounted for the damage difference via a calculated constant damage multiplier.
+	  I have accounted for the damage difference via a constant damage multiplier.
 	*/
-	public static final double DAMAGE_MULTI = 1.35;
+	public static final double DAMAGE_MULTI = 1.333333333;
 	public static final double CRITICAL_BONUS = 0.0;
 	public static final double SURGE_BONUS = 0.5;
 	public static final int HIT_COUNT = 1;

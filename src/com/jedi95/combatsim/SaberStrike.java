@@ -34,10 +34,10 @@ public class SaberStrike extends Ability {
 	public static final String NAME = "Saber Strike";
 	public static final int FORCE = 0;
 	public static final int COOLDOWN = 0; //in ms
-	public static final double DAMAGE_MULTI = 0.33333; //to account for 3 hits
 	public static final double CRITICAL_BONUS = 0.0;
 	public static final double SURGE_BONUS = 0.0;
 	public static final int HIT_COUNT = 3;
+	public static final double DAMAGE_MULTI = 1.0 / HIT_COUNT; //to account for 3 hits
 	public static final int SET_BONUS_FORCE_PER_HIT = 1 * Calc.FORCE_MULTI;
 
 	public SaberStrike(Player player)
