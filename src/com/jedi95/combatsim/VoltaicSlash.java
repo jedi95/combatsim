@@ -40,6 +40,7 @@ public class VoltaicSlash extends Ability {
 	public static final double SURGE_BONUS = 0.0;
 	public static final int HIT_COUNT = 2;
 	public static final double VOLTAGE_FORCE_CRIT_BONUS = 0.0;
+	public static final double SURGING_CHARGE_PROC_CHANCE_BONUS = 0.0;
 
 	public VoltaicSlash(Player player)
 	{

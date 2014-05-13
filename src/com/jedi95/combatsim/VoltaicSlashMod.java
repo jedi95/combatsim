@@ -39,7 +39,8 @@ public class VoltaicSlashMod extends Ability {
 	public static final double CRITICAL_BONUS = 0.15; //From 4pc PVE set bonus
 	public static final double SURGE_BONUS = 0.0;
 	public static final int HIT_COUNT = 2;
-	public static final double VOLTAGE_FORCE_CRIT_BONUS = 0.05;
+	public static final double VOLTAGE_FORCE_CRIT_BONUS = 0.00;
+	public static final double SURGING_CHARGE_PROC_CHANCE_BONUS = 0.125;
 
 	public VoltaicSlashMod(Player player)
 	{

@@ -48,11 +48,21 @@ public class SurgingCharge extends Proc {
 
 	//Need this one to handle overcharge saber proc chance increase
 	public double getProcChance() {
+		double chance = procChance;
 		Effect os = player.getEffect(OverchargeSaber.NAME);
 		if (os.isActive(player.sim.time())) {
-			return procChance + OverchargeSaber.SURGING_CHARGE_CHANCE_BONUS;
+			chance += OverchargeSaber.SURGING_CHARGE_CHANCE_BONUS;
 		}
-		return procChance;
+		Effect voltage = player.getEffect("Voltage");
+		if (voltage.isActive(player.sim.time())) {
+			if (Main.useMod) {
+				chance += VoltaicSlashMod.SURGING_CHARGE_PROC_CHANCE_BONUS * voltage.getStacks();
+			}
+			else {
+				chance += VoltaicSlash.SURGING_CHARGE_PROC_CHANCE_BONUS * voltage.getStacks();
+			}
+		}
+		return chance;
 	}
 
 	//Checks if the proc should activate
