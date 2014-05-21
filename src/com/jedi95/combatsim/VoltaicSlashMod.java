@@ -33,14 +33,14 @@ public class VoltaicSlashMod extends Ability {
 
 	//Ability details
 	public static final String NAME = "Voltaic Slash";
-	public static final int FORCE = 21;
+	public static final int FORCE = 23;
 	public static final int COOLDOWN = 0; //in ms
 	public static final double DAMAGE_MULTI = 1.06; //From charge mastery
 	public static final double CRITICAL_BONUS = 0.15; //From 4pc PVE set bonus
 	public static final double SURGE_BONUS = 0.0;
 	public static final int HIT_COUNT = 2;
 	public static final double VOLTAGE_FORCE_CRIT_BONUS = 0.00;
-	public static final double SURGING_CHARGE_PROC_CHANCE_BONUS = 0.125;
+	public static final double SURGING_CHARGE_PROC_CHANCE_BONUS = 0.0;
 
 	public VoltaicSlashMod(Player player)
 	{

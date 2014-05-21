@@ -466,11 +466,12 @@ public class Main {
 		player.abilities.add(new Discharge(player));
 		player.abilities.add(new Shock(player));
 		player.abilities.add(new Assassinate(player));
-		player.abilities.add(new Maul(player));
 		if (useMod) {
+			player.abilities.add(new MaulMod(player));
 			player.abilities.add(new VoltaicSlashMod(player));
 		}
 		else {
+			player.abilities.add(new Maul(player));
 			player.abilities.add(new VoltaicSlash(player));
 		}
 		player.abilities.add(new SaberStrike(player));
