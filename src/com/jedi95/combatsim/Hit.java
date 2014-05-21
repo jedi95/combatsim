@@ -24,16 +24,19 @@ public class Hit {
 	public double damage;
 	public boolean crit;
 	public String name;
+	public boolean isForce;
 
 	public Hit() {
 		damage = 0.0;
 		crit = false;
 		name = "Unknown Ability";
+		isForce = false;
 	}
 
-	public Hit(String abilityName, double dam, boolean cr) {
+	public Hit(String abilityName, double dam, boolean cr, boolean force) {
 		damage = dam;
 		crit = cr;
 		name = abilityName;
+		isForce = force;
 	}
 }

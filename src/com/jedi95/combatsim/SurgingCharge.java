@@ -65,22 +65,6 @@ public class SurgingCharge extends Proc {
 		return chance;
 	}
 
-	//Checks if the proc should activate
-	public void check(Player player, Target target, long time, int hitCount) {
-		//If not on ICD
-		if (lastActive + cooldown <= time) {
-
-			//Check chance
-			for (int i = 0; i < hitCount; i++) {
-				if (player.random.nextDouble() <= getProcChance()) {
-					handleProc(player, target, time);
-					lastActive = time; //reset timer for ICD
-					break;
-				}
-			}
-		}
-	}
-
 	//Handles the proc
 	public void handleProc(Player player, Target target, long time) {
 
@@ -105,8 +89,7 @@ public class SurgingCharge extends Proc {
 
 	public Hit getHitDamage(Player player) {
 
-		//Using hardcoded damage for lack of a better option. No idea how this gets calculated.
-		Hit hit = new Hit(NAME, Calc.calculateDamage(player, player.sim.getTarget(), damage), false);
+		Hit hit = new Hit(NAME, Calc.calculateDamage(player, player.sim.getTarget(), damage), false, damage.isForce);
 
 		//Handle crits
 		double critChance = Calc.getForceCritChance(player);

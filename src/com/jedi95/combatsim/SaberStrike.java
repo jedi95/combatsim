@@ -66,7 +66,7 @@ public class SaberStrike extends Ability {
 
 		//Loop through hits
 		int actualHits = hitCount;
-		Hit hit = new Hit(getName(), 0.0, false);
+		Hit hit = new Hit(getName(), 0.0, false, false);
 		for (int i = 0; i < hitCount; i++){
 
 			//Calculate damage
@@ -113,7 +113,7 @@ public class SaberStrike extends Ability {
 
 	//Need to override this so we can get non-crit damage
 	public Hit calculateHitDamage(Player player, Target target) {
-		Hit hit = new Hit(getName(), Calc.calculateDamage(player, target, this.getDamage()) * getDamageMulti(), false);
+		Hit hit = new Hit(getName(), Calc.calculateDamage(player, target, this.getDamage()) * getDamageMulti(), false, this.getDamage().isForce);
 
 		if (target.getHealth() <= target.getMaxHealth() * 0.30) {
 			hit.damage *= BELOW_30_PERCENT_DAMAGE_MULTI;

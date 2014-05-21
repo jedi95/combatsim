@@ -106,7 +106,7 @@ public class Discharge extends Ability {
 
 	//Need to override this to handle static charges increasing damage
 	public Hit calculateHitDamage(Player player, Target target) {
-		Hit hit = new Hit(getName(), Calc.calculateDamage(player, target, this.getDamage()) * getDamageMulti(), false);
+		Hit hit = new Hit(getName(), Calc.calculateDamage(player, target, this.getDamage()) * getDamageMulti(), false, this.getDamage().isForce);
 
 		//handle crits
 		double critChance = getCritBonus();

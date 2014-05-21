@@ -105,8 +105,7 @@ public class SurgingChargeMod extends Proc {
 
 	public Hit getHitDamage(Player player) {
 
-		//Using hardcoded damage for lack of a better option. No idea how this gets calculated.
-		Hit hit = new Hit(NAME, Calc.calculateDamage(player, player.sim.getTarget(), damage), false);
+		Hit hit = new Hit(NAME, Calc.calculateDamage(player, player.sim.getTarget(), damage), false, damage.isForce);
 
 		//Handle crits
 		double critChance = Calc.getForceCritChance(player);
