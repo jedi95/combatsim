@@ -9,6 +9,14 @@ For testing gear changes it is far more accurate than parsing within the game be
 For class balance changes it provides more realistic results than purely theoretical calculations.
 
 
+Default character build
+-----------------------
+The stats/gear used by default in the simulator match this ARM profile:
+http://swtor.askmrrobot.com/character/522d23fe-5cd9-4a63-92e4-ac71d45b1983
+
+To change these stats, modify createPlayer() in Main.java. A better method of changing stats will be implemented in the future
+
+
 Included class changes
 ----------------------
 This program includes a set of class balance changes that are aimed at increasing sustained DPS:
@@ -18,9 +26,9 @@ This program includes a set of class balance changes that are aimed at increasin
 
 In my opinion, these changes would be enough to make Deception viable in all current PVE content. It will provide an alternative to Madness when burst or rapid target switching is required.
 
-DISCLAIMER: These changes are only ideas, and they do not nessesarily reflect future class balance.
+DISCLAIMER: These changes are only ideas, and they do not necessarily reflect future class balance.
 
-That said, feel free to expieriment with your own ideas!
+That said, feel free to experiment with your own ideas!
 
 
 Running

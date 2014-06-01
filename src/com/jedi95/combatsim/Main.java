@@ -447,13 +447,13 @@ public class Main {
 		//For the purpose of this simulator I'm using BIS Dread Forged.
 		//This includes all buffs + datacrons and a blue Prototype Nano-Infused Resolve Stim.
 		//The values set here should not include class buffs, but should include stims.
-		//http://swtor.askmrrobot.com/character/e3085878-1b15-4fda-8a89-5ea2db28fd02
+		//http://swtor.askmrrobot.com/character/522d23fe-5cd9-4a63-92e4-ac71d45b1983
 		player.setWillpower(3243.0);
 		player.setStrength(148.0);
-		player.setPower(1214.0);
+		player.setPower(1221.0);
 		player.setForcePower(2302.0);
 		player.setAccuracy(440.0);
-		player.setCritRating(461.0);
+		player.setCritRating(454.0);
 		player.setSurgeRating(564.0);
 		player.setMainhandMinDmg(690.0);
 		player.setMainhandMaxDmg(1036.0);
