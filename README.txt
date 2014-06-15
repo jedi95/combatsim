@@ -11,7 +11,7 @@ For class balance changes it provides more realistic results than purely theoret
 
 Default character build
 -----------------------
-The stats/gear used by default in the simulator match this ARM profile:
+The stats/gear used by default in the simulator match this AMR profile:
 http://swtor.askmrrobot.com/character/522d23fe-5cd9-4a63-92e4-ac71d45b1983
 
 To change these stats, modify createPlayer() in Main.java. A better method of changing stats will be implemented in the future
@@ -44,7 +44,7 @@ This would run the combat simulator on a target with 500K HP using the class cha
 Command line options
 --------------------
  -c         Runs a comparison. (default is off)
- -D         Disables the armor debuff on the target. (default is on)
+ -D         Disables the armour debuff on the target. (default is on)
  -g         Generate comparison charts. (default is off)
  -H <arg>   Sets the target's HP. (default is 1,000,000)
  -h         Displays command line help.
