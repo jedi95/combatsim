@@ -479,13 +479,23 @@ public class Main {
 		player.addOffAbility(new Blackout(player));
 		player.addOffAbility(new Recklessness(player));
 		player.addOffAbility(new PowerAdrenal(player));
-		player.addOffAbility(new OverchargeSaber(player));
+		if (useMod) {
+			player.addOffAbility(new OverchargeSaberMod(player));
+		}
+		else {
+			player.addOffAbility(new OverchargeSaber(player));
+		}
 		player.addOffAbility(new ForceCloak(player));
 
 		//Initialize effects
 		player.addEffect(new Effect(15000, -1000000, "Voltage", 0, 2));
 		player.addEffect(new Effect(10000, -1000000, "Induction", 0, 2));
-		player.addEffect(new Effect(30000, -7500, "Static Charge", 3, 3)); //init to 3 stacks, assumes precasting
+		if (useMod) {
+			player.addEffect(new Effect(30000, -7500, "Static Charge", 2, 3)); //init to 2 stacks aas per balance update, assumes precasting
+		}
+		else {
+			player.addEffect(new Effect(30000, -7500, "Static Charge", 3, 3)); //init to 3 stacks, assumes precasting
+		}
 		player.addEffect(new Effect(10000, -1000000, "Duplicity", 0, 1));
 		player.addEffect(new Effect(6000, 0, "Dark Embrace", 1, 1)); //init to 1 stack, assumes starting from cloak
 		player.addEffect(new Effect(10000, -1000000, "Exploitive Strikes", 0, 1));
