@@ -12,7 +12,7 @@ For class balance changes it provides more realistic results than purely theoret
 Default character build
 -----------------------
 The stats/gear used by default in the simulator match this AMR profile:
-http://swtor.askmrrobot.com/character/522d23fe-5cd9-4a63-92e4-ac71d45b1983
+http://swtor.askmrrobot.com/character/219f9641-5e1e-4428-9a1e-b8fb5214b6a3
 
 To change these stats, modify createPlayer() in Main.java. A better method of changing stats will be implemented in the future
 
@@ -23,6 +23,7 @@ This program includes a set of class balance changes that are aimed at increasin
 1. The base force cost of Voltaic Slash is reduced from 25 to 23
 2. The ICD of Saber Conduit is reduced from 10s to 9s
 3. Each stack of Voltage increases the proc chance of Surging Charge by 12.5%
+4. Electric Ambush now has a 100% chance to grant 1/2 stacks of Static Charge when Recklessness is used (changed from a 50%/100% chance to grant 3 stacks). It still reduces the cooldown of Recklessness upon exiting combat.
 
 In my opinion, these changes would be enough to make Deception viable in all current PVE content. It will provide an alternative to Madness when burst or rapid target switching is required.
 

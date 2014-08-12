@@ -259,44 +259,44 @@ public class Main {
 		useMod = false;
 		targetHP = 100000.0; //100K
 		run();
-		dps_chart.addValue(finalStats.getDPS(), "Live", "100K");
+		dps_chart.addValue(finalStats.getDPS(), "2.8", "100K");
 		targetHP = 250000.0; //250K
 		run();
-		dps_chart.addValue(finalStats.getDPS(), "Live", "250K");
+		dps_chart.addValue(finalStats.getDPS(), "2.8", "250K");
 		targetHP = 500000.0; //500K
 		run();
-		dps_chart.addValue(finalStats.getDPS(), "Live", "500K");
+		dps_chart.addValue(finalStats.getDPS(), "2.8", "500K");
 		targetHP = 1000000.0; //1M
 		run();
-		dps_chart.addValue(finalStats.getDPS(), "Live", "1M");
+		dps_chart.addValue(finalStats.getDPS(), "2.8", "1M");
 		targetHP = 1500000.0; //1.5M
 		run();
-		dps_chart.addValue(finalStats.getDPS(), "Live", "1.5M");
+		dps_chart.addValue(finalStats.getDPS(), "2.8", "1.5M");
 
 		//Generate mod data
 		useMod = true;
 		targetHP = 100000.0; //100K
 		run();
-		dps_chart.addValue(finalStats.getDPS(), "Mod", "100K");
+		dps_chart.addValue(finalStats.getDPS(), "2.10", "100K");
 		targetHP = 250000.0; //250K
 		run();
-		dps_chart.addValue(finalStats.getDPS(), "Mod", "250K");
+		dps_chart.addValue(finalStats.getDPS(), "2.10", "250K");
 		targetHP = 500000.0; //500K
 		run();
-		dps_chart.addValue(finalStats.getDPS(), "Mod", "500K");
+		dps_chart.addValue(finalStats.getDPS(), "2.10", "500K");
 		targetHP = 1000000.0; //1M
 		run();
-		dps_chart.addValue(finalStats.getDPS(), "Mod", "1M");
+		dps_chart.addValue(finalStats.getDPS(), "2.10", "1M");
 		targetHP = 1500000.0; //1.5M
 		run();
-		dps_chart.addValue(finalStats.getDPS(), "Mod", "1.5M");
+		dps_chart.addValue(finalStats.getDPS(), "2.10", "1.5M");
 
 		//Generate percent improvement chart
-		double dpsPercent1 = (((Double) dps_chart.getValue("Mod", "100K") / (Double) dps_chart.getValue("Live", "100K")) - 1) * 100;
-		double dpsPercent2 = (((Double) dps_chart.getValue("Mod", "250K") / (Double) dps_chart.getValue("Live", "250K")) - 1) * 100;
-		double dpsPercent3 = (((Double) dps_chart.getValue("Mod", "500K") / (Double) dps_chart.getValue("Live", "500K")) - 1) * 100;
-		double dpsPercent4 = (((Double) dps_chart.getValue("Mod", "1M") / (Double) dps_chart.getValue("Live", "1M")) - 1) * 100;
-		double dpsPercent5 = (((Double) dps_chart.getValue("Mod", "1.5M") / (Double) dps_chart.getValue("Live", "1.5M")) - 1) * 100;
+		double dpsPercent1 = (((Double) dps_chart.getValue("2.10", "100K") / (Double) dps_chart.getValue("2.8", "100K")) - 1) * 100;
+		double dpsPercent2 = (((Double) dps_chart.getValue("2.10", "250K") / (Double) dps_chart.getValue("2.8", "250K")) - 1) * 100;
+		double dpsPercent3 = (((Double) dps_chart.getValue("2.10", "500K") / (Double) dps_chart.getValue("2.8", "500K")) - 1) * 100;
+		double dpsPercent4 = (((Double) dps_chart.getValue("2.10", "1M") / (Double) dps_chart.getValue("2.8", "1M")) - 1) * 100;
+		double dpsPercent5 = (((Double) dps_chart.getValue("2.10", "1.5M") / (Double) dps_chart.getValue("2.8", "1.5M")) - 1) * 100;
 
 		dps_improvement.addValue(dpsPercent1, "Difference", "100K");
 		dps_improvement.addValue(dpsPercent2, "Difference", "250K");
@@ -371,8 +371,8 @@ public class Main {
 
 		// create a dataset...
 		XYSeriesCollection collection = new XYSeriesCollection();
-		XYSeries xyLive = getSeriesFromMap("Live", testDataLive);
-		XYSeries xyMod = getSeriesFromMap("Mod", testDataMod);
+		XYSeries xyLive = getSeriesFromMap("2.8", testDataLive);
+		XYSeries xyMod = getSeriesFromMap("2.10", testDataMod);
 		collection.addSeries(xyLive);
 		collection.addSeries(xyMod);
 
@@ -447,14 +447,15 @@ public class Main {
 		//For the purpose of this simulator I'm using BIS Dread Forged.
 		//This includes all buffs + datacrons and a blue Prototype Nano-Infused Resolve Stim.
 		//The values set here should not include class buffs, but should include stims.
-		//http://swtor.askmrrobot.com/character/522d23fe-5cd9-4a63-92e4-ac71d45b1983
-		player.setWillpower(3243.0);
+		//http://swtor.askmrrobot.com/character/219f9641-5e1e-4428-9a1e-b8fb5214b6a3
+		player.setWillpower(3437.0);
 		player.setStrength(148.0);
-		player.setPower(1221.0);
-		player.setForcePower(2302.0);
+		player.setPower(1347.0);
+		player.setForcePower(2377.0);
 		player.setAccuracy(440.0);
-		player.setCritRating(454.0);
-		player.setSurgeRating(564.0);
+		player.setCritRating(461.0);
+		player.setSurgeRating(604.0);
+
 		player.setMainhandMinDmg(690.0);
 		player.setMainhandMaxDmg(1036.0);
 
