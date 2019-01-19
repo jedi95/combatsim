@@ -23,15 +23,11 @@ package com.jedi95.combatsim;
 public class ForceCloak extends OffGCDAbility {
 
 	public static final String NAME = "Force Cloak";
-	public static final int RECKLESSNESS_COOLDOWN_REDUCTION = 60000;
-	//NOTE: Setting this to 102 seconds to save complexity.
-	//The optimal force regen rotation looks like this:
-	//Blackout -> 6s -> Force Cloak -> 6s -> Blackout -> 45s -> Blackout -> 45s -> repeat
-	//This takes 102 seconds
-	public static final int COOLDOWN = 102000;
+	public static final int RECKLESSNESS_COOLDOWN_REDUCTION = 60;
+	public static final double COOLDOWN = 75;
 
 	public ForceCloak(Player player) {
-		super(player, NAME, COOLDOWN, 15000);
+		super(player, NAME, COOLDOWN, -72, false);
 	}
 
 	//Called to execute this ability on the specified target
@@ -40,14 +36,27 @@ public class ForceCloak extends OffGCDAbility {
 		//Set last used time
 		lastUsedTime = player.sim.time();
 
-		//Reset cooldown on Blackout
-		player.getOffAbility(Blackout.NAME).finishCooldown();
-
 		//reduce cooldown on recklessness
-		player.getOffAbility(Recklessness.NAME).reduceCooldown(RECKLESSNESS_COOLDOWN_REDUCTION);
+		player.getOffAbility(Constants.OffAbilities.Recklessness).reduceCooldown(RECKLESSNESS_COOLDOWN_REDUCTION);
 
 		//Add dark embrace
-		Effect de = player.getEffect("Dark Embrace");
+		Effect de = player.getEffect(Constants.Effects.DarkEmbrace);
 		de.addStacks(1, player.sim.time());
+	}
+	
+	//Important: this handles the ability priority list! check subclasses.
+	public boolean shouldUse(Target target) {
+		if (!isReady()) {
+			return false;
+		}
+		
+		//If recklessness is not about to come off CD
+		OffGCDAbility reck = player.getOffAbility(Constants.OffAbilities.Recklessness);
+		double timeToReady = reck.getTimeToReady();
+		if (timeToReady > 45) {
+			return true;
+		}
+		
+		return false;
 	}
 }

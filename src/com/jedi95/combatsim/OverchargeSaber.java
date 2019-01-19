@@ -23,12 +23,12 @@ package com.jedi95.combatsim;
 public class OverchargeSaber extends OffGCDAbility {
 
 	public static final String NAME = "Overcharge Saber";
-	public static final int COOLDOWN = 120000;
-	public static final double SURGING_CHARGE_CHANCE_BONUS = 0.35;
-	public static final double SURGING_CHARGE_DAMAGE_MULTI = 2.0;
+	public static final double COOLDOWN = 120;
+	public static final double SURGING_CHARGE_CHANCE_BONUS = 0.25;
+	public static final double SURGING_CHARGE_DAMAGE_MULTI = 1.5;
 
 	public OverchargeSaber(Player player) {
-		super(player, NAME, COOLDOWN, 1500);
+		super(player, NAME, COOLDOWN, (0.25 + (Simulator.BASE_GCD_LENGTH / Calc.getAlacrity(player)) * 2) - COOLDOWN / Calc.getAlacrity(player), true);
 	}
 
 	//Called to execute this ability on the specified target
@@ -38,7 +38,7 @@ public class OverchargeSaber extends OffGCDAbility {
 		lastUsedTime = player.sim.time();
 
 		//Add Effect
-		Effect os = player.getEffect(NAME);
+		Effect os = player.getEffect(Constants.Effects.OverchargeSaber);
 		os.addStacks(1, player.sim.time());
 
 		//Overcharge saber is a self heal, it can proc relics

@@ -23,12 +23,12 @@ package com.jedi95.combatsim;
 public class PowerAdrenal extends OffGCDAbility {
 
 	public static final String NAME = "Power Adrenal";
-	public static final int COOLDOWN = 180000;
+	public static final double COOLDOWN = 180;
 	//Using blue quality Prototype Nano-Infused Attack Adrenal
-	public static final double POWER_BOOST = 675.0;
+	public static final double POWER_BOOST = 870.0;
 
 	public PowerAdrenal(Player player) {
-		super(player, NAME, COOLDOWN, 0);
+		super(player, NAME, COOLDOWN, -1.0, true); //Assume used right before pull
 	}
 
 	public boolean shouldUse(Target target) {
@@ -37,13 +37,14 @@ public class PowerAdrenal extends OffGCDAbility {
 		}
 
 		//Save this for when recklessness is up
-		Effect reck = player.getEffect(Recklessness.NAME);
-		if (reck.isActive(player.sim.time())) {
+		OffGCDAbility reck = player.getOffAbility(Constants.OffAbilities.Recklessness);
+		Effect reckEffect = player.getEffect(Constants.Effects.Recklessness);
+		if (reck.getTimeToReady() < player.sim.getGCDLength() || reckEffect.isActive(player.sim.time())) {
 			return true;
 		}
 		else {
 			//However, if we are very close to killing the target use anyway
-			if (target.getHealth() < 60000) {
+			if (target.getHealth() < 160000) {
 				return true;
 			}
 			return false;
@@ -57,7 +58,7 @@ public class PowerAdrenal extends OffGCDAbility {
 		lastUsedTime = player.sim.time();
 
 		//Apply power adrenal
-		Effect pow = player.getEffect(NAME);
+		Effect pow = player.getEffect(Constants.Effects.PowerAdrenal);
 		pow.addStacks(1, player.sim.time());
 	}
 }

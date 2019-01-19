@@ -23,17 +23,17 @@ package com.jedi95.combatsim;
 public class SARelic extends Proc {
 
 	public static final String NAME = "SA Relic";
-	public static final int COOLDOWN = 20000; //in ms
+	public static final double COOLDOWN = 20;
 	public static final double CHANCE = 0.3;
-	public static final double POWER_BOOST = 740.0;
+	public static final double POWER_BOOST = 1381.0;
 
 	public SARelic(Player player) {
-		super(player, NAME, COOLDOWN, CHANCE);
+		super(player, NAME, COOLDOWN, CHANCE, true);
 	}
 
 	//Handles the proc
-	public void handleProc(Player player, Target target, long time) {
-		Effect sa = player.getEffect(NAME);
+	public void handleProc(Player player, Target target, double time) {
+		Effect sa = player.getEffect(Constants.Effects.SARelic);
 		sa.addStacks(1, time);
 	}
 }

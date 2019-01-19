@@ -20,54 +20,69 @@
 */
 package com.jedi95.combatsim;
 
-public class AbilityDamage {
+public final class AbilityDamage {
 
 	//Ability damage constants
-	protected double standardHealthPercentMin;
-	protected double standardHealthPercentMax;
-	protected double coefficient;
-	protected double amountModifierPercent;
+	public final double standardHealthPercentMin;
+	public final double standardHealthPercentMax;
+	public final double coefficient;
+	public final double amountModifierPercent;
+	public final boolean isForce;
+	public final boolean isInternal;
 
-	//Details
-	protected boolean isSpecial;
-	protected boolean isForce;
-	protected boolean isInternal;
-
-	public AbilityDamage(double stdHealthMin, double stdHealthMax, double coeff, double amtModifierPercent, boolean special, boolean force, boolean internal){
-		standardHealthPercentMin = stdHealthMin;
-		standardHealthPercentMax = stdHealthMax;
-		coefficient = coeff;
-		amountModifierPercent = amtModifierPercent;
-		isSpecial = special;
-		isForce = force;
-		isInternal = internal;
+	private AbilityDamage(AbilityDamageBuilder builder) {
+		this.standardHealthPercentMin = builder.standardHealthPercentMin;
+		this.standardHealthPercentMax = builder.standardHealthPercentMax;
+		this.coefficient = builder.coefficient;
+		this.amountModifierPercent = builder.amountModifierPercent;
+		this.isForce = builder.isForce;
+		this.isInternal = builder.isInternal;
 	}
 
-	public double getStandardHealthPercentMin() {
-		return standardHealthPercentMin;
-	}
-
-	public double getStandardHealthPercentMax() {
-		return standardHealthPercentMax;
-	}
-
-	public double getCoefficient() {
-		return coefficient;
-	}
-
-	public double getAmountModifierPercent() {
-		return amountModifierPercent;
-	}
-
-	public boolean getSpecial() {
-		return isSpecial;
-	}
-
-	public boolean getForce() {
-		return isForce;
-	}
-
-	public boolean getInternal() {
-		return isInternal;
+	public static class AbilityDamageBuilder {
+		private double standardHealthPercentMin;
+		private double standardHealthPercentMax;
+		private double coefficient;
+		private double amountModifierPercent;
+		private boolean isForce;
+		private boolean isInternal;
+		
+		public AbilityDamageBuilder() {
+			
+		}
+		
+		public AbilityDamageBuilder standardHealthPercentMin(double standardHealthPercentMin) {
+			this.standardHealthPercentMin = standardHealthPercentMin;
+			return this;
+		}
+		
+		public AbilityDamageBuilder standardHealthPercentMax(double standardHealthPercentMax) {
+			this.standardHealthPercentMax = standardHealthPercentMax;
+			return this;
+		}
+		
+		public AbilityDamageBuilder coefficient(double coefficient) {
+			this.coefficient = coefficient;
+			return this;
+		}
+		
+		public AbilityDamageBuilder amountModifierPercent(double amountModifierPercent) {
+			this.amountModifierPercent = amountModifierPercent;
+			return this;
+		}
+		
+		public AbilityDamageBuilder isForce(boolean isForce) {
+			this.isForce = isForce;
+			return this;
+		}
+		
+		public AbilityDamageBuilder isInternal(boolean isInternal) {
+			this.isInternal = isInternal;
+			return this;
+		}
+		
+		public AbilityDamage build() {
+			return new AbilityDamage(this);
+		}
 	}
 }

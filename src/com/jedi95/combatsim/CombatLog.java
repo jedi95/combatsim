@@ -39,7 +39,7 @@ public class CombatLog {
 
 		//Handle logging to stdout
 		if (doPrints) {
-			String timeStamp = String.format("[%.3f]", sim.time() / 1000.0);
+			String timeStamp = String.format("[%.3f]", sim.time());
 
 			String critString = "";
 			if (hit.crit) {
@@ -54,14 +54,23 @@ public class CombatLog {
 	public void logAbility(OffGCDAbility ability) {
 		//Handle logging to stdout
 		if (doPrints) {
-			String timeStamp = String.format("[%.3f]", sim.time() / 1000.0);
+			String timeStamp = String.format("[%.3f]", sim.time());
 
 			String output = String.format("%s You activate %s", timeStamp, ability.name);
 			System.out.println(output);
 		}
 	}
+	
+	public void logStride() {
+		if (doPrints) {
+			String timeStamp = String.format("[%.3f]", sim.time());
 
-	public void finishStats(long totalTime) {
+			String output = String.format("%s You activate %s", timeStamp, "Phantom Stride");
+			System.out.println(output);
+		}
+	}
+
+	public void finishStats(double totalTime) {
 		stats.time = totalTime;
 	}
 

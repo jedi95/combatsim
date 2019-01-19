@@ -23,10 +23,10 @@ package com.jedi95.combatsim;
 public class Recklessness extends OffGCDAbility {
 
 	public static final String NAME = "Recklessness";
-	public static final int COOLDOWN = 90000;
+	public static final double COOLDOWN = 75;
 
 	public Recklessness(Player player) {
-		super(player, NAME, COOLDOWN, 82500); //Assumes recklessness used 7.5 seconds before fight starts
+		super(player, NAME, COOLDOWN, -1.5, true); //Assumes recklessness used just before fight starts
 	}
 
 	public boolean shouldUse(Target target) {
@@ -34,15 +34,13 @@ public class Recklessness extends OffGCDAbility {
 			return false;
 		}
 
-		//Only use when we have 0 static charges OR we are about to cloak
-		OffGCDAbility cloak = player.getOffAbility(ForceCloak.NAME);
-		Effect staticCharge = player.getEffect("Static Charge");
-		if (!staticCharge.isActive(player.sim.time()) || cloak.getTimeToReady() < Simulator.GCD_LENGTH) {
+		//Only use when we have 0 static charges
+		Effect staticCharge = player.getEffect(Constants.Effects.StaticCharge);
+		if (!staticCharge.isActive(player.sim.time())) {
 			return true;
 		}
-		else {
-			return false;
-		}
+		
+		return false;
 	}
 
 	//Called to activate this ability
@@ -52,11 +50,11 @@ public class Recklessness extends OffGCDAbility {
 		lastUsedTime = player.sim.time();
 
 		//Apply recklessness stacks
-		Effect reck = player.getEffect(NAME);
+		Effect reck = player.getEffect(Constants.Effects.Recklessness);
 		reck.addStacks(2, player.sim.time());
 
 		//Apply static charges
-		Effect staticCharge = player.getEffect("Static Charge");
+		Effect staticCharge = player.getEffect(Constants.Effects.StaticCharge);
 		staticCharge.addStacks(3, player.sim.time());
 	}
 }

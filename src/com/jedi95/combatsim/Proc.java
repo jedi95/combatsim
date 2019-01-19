@@ -20,20 +20,22 @@
 */
 package com.jedi95.combatsim;
 
-public class Proc {
+public abstract class Proc {
 
-	protected int cooldown; //in ms
+	protected double cooldown;
 	protected double procChance;
-	protected long lastActive;
+	protected double lastActive;
 	protected String name;
 	protected Player player;
+	protected boolean useAlacrity;
 
-	public Proc(Player player1, String newName, int cd, double chance) {
-		player = player1;
-		name = newName;
-		cooldown = cd;
-		procChance = chance;
-		lastActive = -1000000;
+	public Proc(Player player, String name, double cooldown, double procChance, boolean useAlacrity) {
+		this.player = player;
+		this.name = name;
+		this.cooldown = cooldown;
+		this.procChance = procChance;
+		this.useAlacrity = useAlacrity;
+		this.lastActive = -1000;
 	}
 
 	public String getName() {
@@ -44,10 +46,14 @@ public class Proc {
 		return procChance;
 	}
 
+	public boolean isReady() {
+		return lastActive + getCooldown() <= player.sim.time();
+	}
+	
 	//Checks if the proc should activate
-	public void check(Player player, Target target, Hit hit, long time, int hitCount) {
+	public void check(Player player, Target target, Hit hit, double time, int hitCount) {
 		//If not on ICD
-		if (lastActive + cooldown <= time) {
+		if (isReady()) {
 
 			//Check chance
 			if (player.random.nextDouble() <= getProcChance()) {
@@ -57,11 +63,34 @@ public class Proc {
 		}
 	}
 
-	public void handleProc(Player player, Target target, long time) {
-		return; //Parent class does nothing here.
+	public double getCooldown() {
+		if (useAlacrity) {
+			return cooldown / Calc.getAlacrity(player);
+		}
+		else
+		{
+			return cooldown;
+		}
 	}
+	
+	public abstract void handleProc(Player player, Target target, double time);
 
 	public Hit getHitDamage(Player player) {
 		return new Hit();
+	}
+	
+	public boolean shouldUseAlacrity() {
+		return useAlacrity;
+	}
+	
+	//Returns how long until the ability is ready
+	public double getTimeToReady() {
+		if (isReady()){
+			return 0;
+		}
+		else
+		{
+			return (lastActive + getCooldown()) - player.sim.time();
+		}
 	}
 }

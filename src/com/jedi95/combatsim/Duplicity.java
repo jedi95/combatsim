@@ -23,16 +23,16 @@ package com.jedi95.combatsim;
 public class Duplicity extends Proc {
 
 	public static final String NAME = "Duplicity";
-	public static final int COOLDOWN = 9000; //in ms
-	public static final double CHANCE = 0.3;
+	public static final double COOLDOWN = 10;
+	public static final double CHANCE = 1;
 
 	public Duplicity(Player player) {
-		super(player, NAME, COOLDOWN, CHANCE);
+		super(player, NAME, COOLDOWN, CHANCE, true);
 	}
 
 	//Handles the proc
-	public void handleProc(Player player, Target target, long time) {
-		Effect duplicity = player.getEffect("Duplicity");
+	public void handleProc(Player player, Target target, double time) {
+		Effect duplicity = player.getEffect(Constants.Effects.Duplicity);
 		duplicity.addStacks(1, time);
 	}
 }

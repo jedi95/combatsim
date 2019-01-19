@@ -23,13 +23,13 @@ package com.jedi95.combatsim;
 public class Effect {
 
 	//times are in ms
-	private long appliedTime;
-	private int duration;
+	private double appliedTime;
+	private double duration;
 	private int stacks;
 	private int stackLimit;
 	private String name;
 
-	public Effect(int newDuration, long time, String effectName, int initialStacks, int maxStacks){
+	public Effect(double newDuration, double time, String effectName, int initialStacks, int maxStacks){
 		duration = newDuration;
 		appliedTime = time;
 		name = effectName;
@@ -43,22 +43,22 @@ public class Effect {
 	}
 
 	//Returns the duration that this effect will last
-	public int getDuration() {
+	public double getDuration() {
 		return duration;
 	}
 
 	//Returns the time remaining before this effect falls off
-	public long getRemainingTime(long time) {
+	public double getRemainingTime(double time) {
 		return Math.max(0, (appliedTime + duration) - time);
 	}
 
 	//indicates if this effect is currently active
-	public boolean isActive(long time) {
+	public boolean isActive(double time) {
 		return (!shouldRemove(time)) && (stacks > 0);
 	}
 
 	//Indicates if this effect should fall off
-	public boolean shouldRemove(long time){
+	public boolean shouldRemove(double time){
 		return appliedTime + duration <= time;
 	}
 
@@ -68,7 +68,7 @@ public class Effect {
 	}
 
 	//Used to add stacks (voltage, induction, static charge, recklessness)
-	public void addStacks(int count, long time) {
+	public void addStacks(int count, double time) {
 		if (isActive(time)){
 			stacks += count;
 		}

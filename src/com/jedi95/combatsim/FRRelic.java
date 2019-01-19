@@ -22,17 +22,17 @@ package com.jedi95.combatsim;
 
 public class FRRelic extends Proc {
 	public static final String NAME = "FR Relic";
-	public static final int COOLDOWN = 20000; //in ms
+	public static final double COOLDOWN = 20;
 	public static final double CHANCE = 0.3;
-	public static final double MAINSTAT_BOOST = 740.0;
+	public static final double MAINSTAT_BOOST = 1381.0;
 
 	public FRRelic(Player player) {
-		super(player, NAME, COOLDOWN, CHANCE);
+		super(player, NAME, COOLDOWN, CHANCE, true);
 	}
 
 	//Handles the proc
-	public void handleProc(Player player, Target target, long time) {
-		Effect fr = player.getEffect(NAME);
+	public void handleProc(Player player, Target target, double time) {
+		Effect fr = player.getEffect(Constants.Effects.FRRelic);
 		fr.addStacks(1, time);
 	}
 }

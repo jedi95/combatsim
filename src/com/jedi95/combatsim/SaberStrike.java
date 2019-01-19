@@ -21,29 +21,30 @@
 package com.jedi95.combatsim;
 
 public class SaberStrike extends Ability {
-	//Damage constants
-	public static final double standardHealthPercentMin = 0.0;
-	public static final double standardHealthPercentMax = 0.0;
-	public static final double coefficient = 0.989;
-	public static final double amountModifierPercent = 0.0115;
-	public static final boolean IS_SPECIAL = false;
-	public static final boolean IS_FORCE = false;
-	public static final boolean IS_INTERNAL = false;
-
 	//Ability details
 	public static final String NAME = "Saber Strike";
-	public static final int FORCE = 0;
-	public static final int COOLDOWN = 0; //in ms
+	public static final double FORCE = 0;
+	public static final double COOLDOWN = 0;
 	public static final double CRITICAL_BONUS = 0.0;
 	public static final double SURGE_BONUS = 0.0;
 	public static final int HIT_COUNT = 3;
-	public static final double DAMAGE_MULTI = 1.0 / HIT_COUNT; //to account for 3 hits
-	public static final int SET_BONUS_FORCE_PER_HIT = 1 * Calc.FORCE_MULTI;
+	public static final double DAMAGE_MULTI = 1.0 / HIT_COUNT;
 
+	//Ability damage constants
+	public static final AbilityDamage DAMAGE = 
+			new AbilityDamage.AbilityDamageBuilder()
+			.standardHealthPercentMin(0.0)
+			.standardHealthPercentMax(0.0)
+			.coefficient(1.0)
+			.amountModifierPercent(-1.0)
+			.isForce(false)
+			.isInternal(false)
+			.build();
+	
 	public SaberStrike(Player player)
 	{
 		super(player, NAME, FORCE, COOLDOWN, DAMAGE_MULTI, CRITICAL_BONUS, SURGE_BONUS, HIT_COUNT);
-		damage = new AbilityDamage(standardHealthPercentMin, standardHealthPercentMax, coefficient, amountModifierPercent, IS_SPECIAL, IS_FORCE, IS_INTERNAL);
+		damage = DAMAGE;
 	}
 
 	public void use(Target target) {
@@ -55,18 +56,11 @@ public class SaberStrike extends Ability {
 		lastUsedTime = player.sim.time();
 
 		//Calculate accuracy
-		double accuracy;
-		if (damage.isSpecial || damage.isForce){
-			accuracy = Calc.getSpecialAccuracy(player, target);
-		}
-		else
-		{
-			accuracy = Calc.getBasicAccuracy(player, target);
-		}
+		double accuracy = Calc.getAccuracy(player, target);
 
 		//Loop through hits
 		int actualHits = hitCount;
-		Hit hit = new Hit(getName(), 0.0, false, false);
+		Hit hit = new Hit(this, 0.0, false, false, getName());
 		for (int i = 0; i < hitCount; i++){
 
 			//Calculate damage
@@ -77,23 +71,14 @@ public class SaberStrike extends Ability {
 			{
 				//handle crits
 				double critChance = getCritBonus();
-				if (damage.isForce) {
-					critChance += Calc.getForceCritChance(player);
-				}
-				else
-				{
-					critChance += Calc.getMeleeCritChance(player);
-				}
+				critChance += Calc.getCritChance(player);
 
 				boolean isCrit = player.random.nextDouble() <= critChance;
 				if (isCrit)
 				{
 					hit.crit = true;
-					hit.damage *= Calc.getCriticalDamageMultiplier(player) + getSurgeBonus();
+					hit.damage *= Calc.getSuperCritMultiplier(player, critChance) + getSurgeBonus();
 				}
-
-				//Handle 2-piece set bonus force regen
-				player.addForce(SET_BONUS_FORCE_PER_HIT);
 
 				actualHits++;
 				target.applyHit(hit);
@@ -113,7 +98,7 @@ public class SaberStrike extends Ability {
 
 	//Need to override this so we can get non-crit damage
 	public Hit calculateHitDamage(Player player, Target target) {
-		Hit hit = new Hit(getName(), Calc.calculateDamage(player, target, this.getDamage()) * getDamageMulti(), false, this.getDamage().isForce);
+		Hit hit = new Hit(this, Calc.calculateDamage(player, target, this.getDamage()) * getDamageMulti(), false, this.getDamage().isForce, getName());
 
 		if (target.getHealth() <= target.getMaxHealth() * 0.30) {
 			hit.damage *= BELOW_30_PERCENT_DAMAGE_MULTI;

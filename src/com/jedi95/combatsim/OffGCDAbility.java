@@ -22,29 +22,41 @@ package com.jedi95.combatsim;
 
 public class OffGCDAbility {
 	protected String name;
-	protected int cooldown; //Cooldown is stored as miliseconds
-	protected long lastUsedTime; //timestamp at last use, in ms since simulation start
+	protected double cooldown;
+	protected double lastUsedTime;
+	protected boolean useAlacrity;
 
 	protected Player player;
 
-	public OffGCDAbility(Player player1, String newName, int cd, int initialDelay){
-		player = player1;
-		name = newName;
-		cooldown = cd;
-		lastUsedTime = (initialDelay + player.sim.time()) - cooldown;
+	public OffGCDAbility(Player player, String name, double cooldown, double initialUsedTime, boolean useAlacrity){
+		this.player = player;
+		this.name = name;
+		this.cooldown = cooldown;
+		this.useAlacrity = useAlacrity;
+		this.lastUsedTime = initialUsedTime;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public int getCooldown() {
-		return cooldown;
+	public double getCooldown() {
+		if (useAlacrity) {
+			return cooldown / Calc.getAlacrity(player);
+		}
+		else
+		{
+			return cooldown;
+		}
+	}
+	
+	public boolean shouldUseAlacrity() {
+		return useAlacrity;
 	}
 
 	//Returns true if the ability is not currently on cooldown
 	public boolean isReady() {
-		return lastUsedTime + cooldown <= player.sim.time();
+		return lastUsedTime + getCooldown() <= player.sim.time();
 	}
 
 	//Important: this handles the ability priority list! check subclasses.
@@ -53,13 +65,13 @@ public class OffGCDAbility {
 	}
 
 	//Returns how long until the ability is ready
-	public long getTimeToReady() {
+	public double getTimeToReady() {
 		if (isReady()){
 			return 0;
 		}
 		else
 		{
-			return (lastUsedTime + cooldown) - player.sim.time();
+			return (lastUsedTime + getCooldown()) - player.sim.time();
 		}
 	}
 
@@ -83,11 +95,11 @@ public class OffGCDAbility {
 
 	//Instantly finishes the cooldown of the ability
 	public void finishCooldown() {
-		lastUsedTime = player.sim.time() - cooldown;
+		lastUsedTime = player.sim.time() - getCooldown();
 	}
 
 	//Removes X seconds from the current cooldown
-	public void reduceCooldown(int miliseconds) {
-		lastUsedTime -= miliseconds;
+	public void reduceCooldown(double seconds) {
+		lastUsedTime -= seconds;
 	}
 }

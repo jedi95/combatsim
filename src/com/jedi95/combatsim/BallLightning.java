@@ -20,42 +20,42 @@
 */
 package com.jedi95.combatsim;
 
-public class Shock extends Ability {
-
-	//Damage constants
-	public static final double standardHealthPercentMin = 0.136;
-	public static final double standardHealthPercentMax = 0.176;
-	public static final double coefficient = 1.56;
-	public static final double amountModifierPercent = 0.01;
-	public static final boolean IS_SPECIAL = false;
-	public static final boolean IS_FORCE = true;
-	public static final boolean IS_INTERNAL = false;
+public class BallLightning extends Ability {
 
 	//Ability details
-	public static final String NAME = "Shock";
-	public static final int FORCE = 39;
-	public static final int COOLDOWN = 6000; //in ms
-	public static final double DAMAGE_MULTI = 1.25; // from Assassin's Training
-	//NOTE: Assassin's Training doesn't appear to affect tooltips. (which match perfectly without this)
+	public static final String NAME = "Ball Lightning";
+	public static final double FORCE = 32;
+	public static final double COOLDOWN = 6;
+	public static final double DAMAGE_MULTI = 1.0;
 	public static final double CRITICAL_BONUS = 0.0;
-	public static final double SURGE_BONUS = 0.5;
+	public static final double SURGE_BONUS = 0.05;
 	public static final int HIT_COUNT = 1;
-	//NOTE: Induction's cost reduction uses 25% of the original force cost of Shock.
-	//It does not take the base cost reduction from Torment into account.
-	public static final int INDUCTION_FORCE_REDUCTION = 1125;
-	public static final double VOLTAGE_CHANCE = 0.5;
-	public static final double SECOND_SHOCK_CHANCE = 0.45;
-	public static final double SECOND_SHOCK_DAMAGE_MULT = 0.5;
 
-	public Shock(Player player)
+	public static final double INDUCTION_FORCE_REDUCTION = 8;
+	public static final double VOLTAGE_CHANCE = 0.5;
+	public static final double SECOND_HIT_CHANCE = 0.5;
+	public static final double SECOND_HIT_DAMAGE_MULT = 0.5;
+	
+	//Ability damage constants
+	public static final AbilityDamage DAMAGE = 
+			new AbilityDamage.AbilityDamageBuilder()
+			.standardHealthPercentMin(0.164)
+			.standardHealthPercentMax(0.204)
+			.coefficient(1.84)
+			.amountModifierPercent(0)
+			.isForce(true)
+			.isInternal(false)
+			.build();
+
+	public BallLightning(Player player)
 	{
 		super(player, NAME, FORCE, COOLDOWN, DAMAGE_MULTI, CRITICAL_BONUS, SURGE_BONUS, HIT_COUNT);
-		damage = new AbilityDamage(standardHealthPercentMin, standardHealthPercentMax, coefficient, amountModifierPercent, IS_SPECIAL, IS_FORCE, IS_INTERNAL);
+		damage = DAMAGE;
 	}
 
 	//Handle induction force cost reduction
-	public int getForceCost() {
-		Effect induction = player.getEffect("Induction");
+	public double getForceCost() {
+		Effect induction = player.getEffect(Constants.Effects.Induction);
 		if (induction.isActive(player.sim.time()))
 		{
 			return forceCost - (INDUCTION_FORCE_REDUCTION * induction.getStacks());
@@ -68,12 +68,12 @@ public class Shock extends Ability {
 
 	//Handle removing induction stacks
 	public void consumeEffects(Hit hit) {
-		Effect induction = player.getEffect("Induction");
+		Effect induction = player.getEffect(Constants.Effects.Induction);
 		induction.resetStacks();
 
 		//Consume recklessness charge
 		if (hit.crit) {
-			Effect reck = player.getEffect("Recklessness");
+			Effect reck = player.getEffect(Constants.Effects.Recklessness);
 			if (reck.isActive(player.sim.time())){
 				reck.consumeStacks(1);
 			}
@@ -84,22 +84,18 @@ public class Shock extends Ability {
 	public void checkProcs(Target target, Hit hit, int hitCount) {
 
 		//Handle second shock hit
-		int actualHits = 1;
-		if (player.random.nextDouble() <= SECOND_SHOCK_CHANCE) {
-
-			//Count second hit
-			actualHits++;
+		if (player.random.nextDouble() <= SECOND_HIT_CHANCE) {
 
 			//Get damage
 			Hit secondShock = calculateHitDamage(player, target);
-			secondShock.damage *= SECOND_SHOCK_DAMAGE_MULT;
+			secondShock.damage *= SECOND_HIT_DAMAGE_MULT;
 
 			//Apply hit
 			target.applyHit(secondShock);
 
 			//Consume recklessness charge
 			if (secondShock.crit) {
-				Effect reck = player.getEffect("Recklessness");
+				Effect reck = player.getEffect(Constants.Effects.Recklessness);
 				if (reck.isActive(player.sim.time())){
 					reck.consumeStacks(1);
 				}
@@ -107,7 +103,7 @@ public class Shock extends Ability {
 		}
 
 		//Add static charges
-		Effect voltage = player.getEffect("Voltage");
+		Effect voltage = player.getEffect(Constants.Effects.Voltage);
 		if (voltage.isActive(player.sim.time())) {
 			if (player.random.nextDouble() <= (VOLTAGE_CHANCE * voltage.getStacks())) {
 				//Surging Charge
@@ -117,12 +113,12 @@ public class Shock extends Ability {
 
 		//Handle ES
 		if (hit.crit) {
-			Effect es = player.getEffect("Exploitive Strikes");
+			Effect es = player.getEffect(Constants.Effects.ExploitiveStrikes);
 			es.addStacks(1, player.sim.time());
 		}
 
 		//Call global handler
-		super.checkProcs(target, hit, actualHits);
+		super.checkProcs(target, hit, hitCount);
 	}
 
 	//Important: this handles the ability priority list! check subclasses.
@@ -131,14 +127,19 @@ public class Shock extends Ability {
 			return false;
 		}
 
-		Effect voltage = player.getEffect("Voltage");
-		Effect induction = player.getEffect("Induction");
-		long time = player.sim.time();
+		Effect voltage = player.getEffect(Constants.Effects.Voltage);
+		Effect induction = player.getEffect(Constants.Effects.Induction);
+		double time = player.sim.time();
 
+		//Check if voltage will fall off in the next 2 GCD
+		if (voltage.getRemainingTime(time) < player.sim.getGCDLength() * 2) {
+			return false;
+		}
+		
 		//If we have 2 stacks of voltage
 		if (voltage.isActive(time) && voltage.getStacks() == 2) {
-			//If we have 2 stacks of induction
-			if (induction.isActive(time) && induction.getStacks() == 2) {
+			//If we have at least 1 induction stack
+			if (induction.isActive(time) && induction.getStacks() >= 1) {
 				return true;
 			}
 		}

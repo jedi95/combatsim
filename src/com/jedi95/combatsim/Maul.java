@@ -22,51 +22,54 @@ package com.jedi95.combatsim;
 
 public class Maul extends Ability {
 
-	//Damage constants
-	public static final double standardHealthPercentMin = 0.236;
-	public static final double standardHealthPercentMax = 0.236;
-	public static final double coefficient = 2.3705;
-	public static final double amountModifierPercent = 0.58;
-	public static final boolean IS_SPECIAL = true;
-	public static final boolean IS_FORCE = false;
-	public static final boolean IS_INTERNAL = false;
-
 	//Ability details
 	public static final String NAME = "Maul";
-	public static final int FORCE = 40;
-	public static final int COOLDOWN = 0; //in ms
-	public static final double DAMAGE_MULTI = 1.06;
+	public static final double FORCE = 40;
+	public static final double COOLDOWN = 0;
+	public static final double DAMAGE_MULTI = 1.0;
 	public static final double CRITICAL_BONUS = 0.0;
 	public static final double SURGE_BONUS = 0.3;
-	public static final double DUPLICITY_DAMAGE_MULTI = 1.3;
-	public static final int DUPLICITY_FORCE_REDUCTION_FACTOR = 4; //newCost = originalCost / reduction
+	public static final double DUPLICITY_DAMAGE_MULTI = 1.2;
+	public static final double DUPLICITY_FORCE_REDUCTION_MULTI = 0.25;
 	public static final int HIT_COUNT = 1;
 
+	//Ability damage constants
+	public static final AbilityDamage DAMAGE = 
+			new AbilityDamage.AbilityDamageBuilder()
+			.standardHealthPercentMin(0.233)
+			.standardHealthPercentMax(0.233)
+			.coefficient(2.33)
+			.amountModifierPercent(0.55)
+			.isForce(false)
+			.isInternal(false)
+			.build();
+	
 	public Maul(Player player)
 	{
 		super(player, NAME, FORCE, COOLDOWN, DAMAGE_MULTI, CRITICAL_BONUS, SURGE_BONUS, HIT_COUNT);
-		damage = new AbilityDamage(standardHealthPercentMin, standardHealthPercentMax, coefficient, amountModifierPercent, IS_SPECIAL, IS_FORCE, IS_INTERNAL);
+		damage = DAMAGE;
 	}
 
 	//Handle duplicity damage bonus
 	public double getDamageMulti() {
-		Effect duplicity = player.getEffect("Duplicity");
+		double multiplier = super.getDamageMulti();
+		Effect duplicity = player.getEffect(Constants.Effects.Duplicity);
 		if (duplicity.isActive(player.sim.time()))
 		{
-			return damageMulti * DUPLICITY_DAMAGE_MULTI;
+			return multiplier * DUPLICITY_DAMAGE_MULTI;
 		}
 		else
 		{
-			return damageMulti;
+			return multiplier;
 		}
 	}
 
 	//Handle duplicity force cost reduction
-	public int getForceCost() {
-		Effect duplicity = player.getEffect("Duplicity");
+	public double getForceCost() {
+		Effect duplicity = player.getEffect(Constants.Effects.Duplicity);
 		if (duplicity.isActive(player.sim.time()))
 		{
-			return forceCost / DUPLICITY_FORCE_REDUCTION_FACTOR;
+			return forceCost * DUPLICITY_FORCE_REDUCTION_MULTI;
 		}
 		else
 		{
@@ -76,15 +79,15 @@ public class Maul extends Ability {
 
 	//Remove any stacks of duplicity
 	public void consumeEffects(Hit hit) {
-		Effect duplicity = player.getEffect("Duplicity");
-		duplicity.resetStacks();
+		player.getEffect(Constants.Effects.Duplicity).resetStacks();
+		player.getEffect(Constants.Effects.StalkerCriticalBonus).resetStacks();
 	}
 
 	//Check for induction stacks
 	public void checkProcs(Target target, Hit hit, int hitCount) {
 
 		//Add induction
-		Effect induction = player.getEffect("Induction");
+		Effect induction = player.getEffect(Constants.Effects.Induction);
 		induction.addStacks(1, player.sim.time());
 
 		//Call global handler
@@ -96,38 +99,36 @@ public class Maul extends Ability {
 			return false;
 		}
 
-		long time = player.sim.time();
+		double time = player.sim.time();
 
-		//Only use if we have duplicity
-		Effect duplicity = player.getEffect("Duplicity");
-		if (duplicity.isActive(time))
-		{
-			Effect induction = player.getEffect("Induction");
-			Effect voltage = player.getEffect("Voltage");
-
-			//If the proc is going to fall off in the next GCD then use maul
-			if (duplicity.isActive(time) && (duplicity.getRemainingTime(time) <= Simulator.GCD_LENGTH)) {
-				return true;
-			}
-			//If we don't have 2 stacks of voltage then don't use maul
-			else if (!(voltage.isActive(time) && voltage.getStacks() >= 2)) {
-				return false;
-			}
-			//If Voltage will fall off this GCD don't use maul
-			else if (voltage.getRemainingTime(time) <= Simulator.GCD_LENGTH) {
-				return false;
-			}
-			//If we don't have 2 induction stacks then use Maul
-			else if (!induction.isActive(time) || (induction.isActive(time) && induction.getStacks() < 2))
-			{
-				return true;
-			}
-			//If we will force cap
-			else if (player.getForce() + player.sim.getForceRegen(Simulator.GCD_LENGTH) + (SaberStrike.SET_BONUS_FORCE_PER_HIT * SaberStrike.HIT_COUNT) >= Player.MAX_FORCE) {
-				return true;
-			}
+		//Check if voltage will fall off in the next 2 GCD
+		Effect voltage = player.getEffect(Constants.Effects.Voltage);
+		if (voltage.getRemainingTime(time) < player.sim.getGCDLength() * 2) {
+			return false;
 		}
-
+		
+		//Check if we need autocrit ASAP in opener
+		Effect autocrit = player.getEffect(Constants.Effects.StalkerCriticalBonus);
+		Proc autocritproc = player.getProc(3);
+		if (!autocrit.isActive(time) && autocritproc.isReady() && player.sim.time() < 10) {
+			return false;
+		}
+		
+		//Check if we have duplicity
+		Effect duplicity = player.getEffect(Constants.Effects.Duplicity);
+		if (duplicity.isActive(time)) {
+			return true;
+		}
+		
 		return false;
+	}
+	
+	public double getCritBonus() {
+		double critBonus = super.getCritBonus();
+		boolean addSetBonusCrit = player.getEffect(Constants.Effects.StalkerCriticalBonus).isActive(player.sim.time());
+		if (addSetBonusCrit) {
+			critBonus += StalkerCriticalBonus.CRITICAL_CHANCE_BONUS;
+		}
+		return critBonus;
 	}
 }

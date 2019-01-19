@@ -26,7 +26,7 @@ public class Stats {
 
 	public HashMap<String, AbilityStats> abilityList;
 	public AbilityStats totals;
-	public long time;
+	public double time;
 
 	public Stats() {
 		abilityList = new HashMap<String, AbilityStats>();
@@ -62,6 +62,6 @@ public class Stats {
 	}
 
 	public double getDPS() {
-		return 1000.0 * totals.totalDamage / time;
+		return totals.totalDamage / time;
 	}
 }

@@ -22,20 +22,20 @@ package com.jedi95.combatsim;
 
 public class Simulator {
 
-	public static final int GCD_LENGTH = 1500;
-	public static final int SIM_STEP = 500;
+	public static final double BASE_GCD_LENGTH = 1.5;
+	public static final double SIM_STEP = 0.1;
 
-	private long _time; //Time in ms since simulator started
+	private double _time; //Time in ms since simulator started
 
 	private Player player;
 	private Target target;
-	private long lastgcd;
+	private double nextgcd;
 	private CombatLog log;
 
 	public Simulator(boolean printLog)
 	{
 		_time = 0;
-		lastgcd = 0 - GCD_LENGTH;
+		nextgcd = 0;
 		log = new CombatLog(this, printLog);
 	}
 
@@ -74,37 +74,51 @@ public class Simulator {
 		player.handleOffGCD(target);
 
 		//handle GCD
-		if (lastgcd + GCD_LENGTH <= _time) {
+		if (nextgcd <= _time) {
 
-			//Select and use ability
-			for (int i = 0; i < player.abilities.size(); i++){
-				Ability ability = player.abilities.get(i);
-				if (ability.shouldUse(target)){
-					ability.use(target);
-					break;
-				}
+			//If we should use phantom stride
+			PhantomStride phantomStride = player.getPhantomStride();
+			if (phantomStride.shouldUse()) {
+				phantomStride.use();
+				
+				//Update last GCD
+				nextgcd = _time + PhantomStride.GCD_DELAY;
 			}
-			//Update last GCD
-			lastgcd = _time;
+			else {
+				//Select and use ability
+				for (Constants.Abilities e: Constants.Abilities.values())
+				{
+					Ability ability = player.abilities.get(e);
+					if (ability.shouldUse(target)){
+						ability.use(target);
+						break;
+					}
+				}
+				//Update next GCD
+				nextgcd = _time + getGCDLength();
+			}
 		}
 	}
 
 	//Returns how much force would be generated over some period of time. NOTE: ignores dark embrace falling off! only valid for low duration.
-	public int getForceRegen(int duration) {
-		int forceToAdd;
-		Effect darkEmbrace = player.getEffect("Dark Embrace");
+	public double getForceRegen(double duration) {
+		
+		double forceToAdd = Player.BASE_REGEN * Calc.getAlacrity(player) * duration;
+		Effect darkEmbrace = player.getEffect(Constants.Effects.DarkEmbrace);
+		
 		if (darkEmbrace.isActive(_time))
 		{
-			forceToAdd = (int) Math.round(Player.BASE_REGEN * Player.DARK_EMBRACE_FORCE_REGEN_MULTI * (duration / 1000.0));
+			forceToAdd *= Player.DARK_EMBRACE_FORCE_REGEN_MULTI;
 		}
-		else
-		{
-			forceToAdd = (int) Math.round(Player.BASE_REGEN * (duration / 1000.0));
-		}
+
 		return forceToAdd;
 	}
 
-	public long time(){
+	public double getGCDLength() {
+		return BASE_GCD_LENGTH / Calc.getAlacrity(player);
+	}
+	
+	public double time(){
 		return _time;
 	}
 

@@ -23,20 +23,23 @@ package com.jedi95.combatsim;
 public class Hit {
 	public double damage;
 	public boolean crit;
-	public String name;
+	public Ability ability;
 	public boolean isForce;
+	public String name;
 
 	public Hit() {
+		ability = null;
 		damage = 0.0;
 		crit = false;
-		name = "Unknown Ability";
 		isForce = false;
+		name = "Unknown";
 	}
 
-	public Hit(String abilityName, double dam, boolean cr, boolean force) {
-		damage = dam;
-		crit = cr;
-		name = abilityName;
-		isForce = force;
+	public Hit(Ability ability, double damage, boolean crit, boolean isForce, String name) {
+		this.ability = ability;
+		this.damage = damage;
+		this.crit = crit;
+		this.isForce = isForce;
+		this.name = name;
 	}
 }

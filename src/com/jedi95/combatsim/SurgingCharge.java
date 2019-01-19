@@ -22,54 +22,61 @@ package com.jedi95.combatsim;
 
 public class SurgingCharge extends Proc {
 
-	//Damage constants
-	public static final double standardHealthPercentMin = 0.05;
-	public static final double standardHealthPercentMax = 0.05;
-	public static final double coefficient = 0.5;
-	public static final double amountModifierPercent = 0.01;
-	public static final boolean IS_SPECIAL = false;
-	public static final boolean IS_FORCE = true;
-	public static final boolean IS_INTERNAL = true;
-
 	//Effect constants
 	public static final String NAME = "Surging Charge";
-	public static final int COOLDOWN = 4500; //in ms
-	public static final double CHANCE = 0.25;
-	public static final int SABER_CONDUIT_ICD = 10000;
-	public static final int SABER_CONDUIT_FORCE = 10 * Calc.FORCE_MULTI;
-
+	public static final double COOLDOWN = 6;
+	public static final double CHANCE = 0.5;
+	public static final double SABER_CONDUIT_ICD = 12;
+	public static final double SABER_CONDUIT_FORCE = 9;
+	public static final double SABER_CONDUIT_DURATION = 9;
+	
+	protected double lastSaberConduit = -1000;
 	public AbilityDamage damage;
-	protected long lastSaberConduit = -1000000;
-
+	
+	//Ability damage constants
+	public static final AbilityDamage DAMAGE = 
+			new AbilityDamage.AbilityDamageBuilder()
+			.standardHealthPercentMin(0.045)
+			.standardHealthPercentMax(0.045)
+			.coefficient(0.45)
+			.amountModifierPercent(0)
+			.isForce(true)
+			.isInternal(true)
+			.build();
+	
 	public SurgingCharge(Player player) {
-		super(player, NAME, COOLDOWN, CHANCE);
-		damage = new AbilityDamage(standardHealthPercentMin, standardHealthPercentMax, coefficient, amountModifierPercent, IS_SPECIAL, IS_FORCE, IS_INTERNAL);
+		super(player, NAME, COOLDOWN, CHANCE, true);
+		damage = DAMAGE;
 	}
 
 	//Need this one to handle overcharge saber proc chance increase
 	public double getProcChance() {
 		double chance = procChance;
-		Effect os = player.getEffect(OverchargeSaber.NAME);
+		Effect os = player.getEffect(Constants.Effects.OverchargeSaber);
 		if (os.isActive(player.sim.time())) {
 			chance += OverchargeSaber.SURGING_CHARGE_CHANCE_BONUS;
-		}
-		Effect voltage = player.getEffect("Voltage");
-		if (voltage.isActive(player.sim.time())) {
-			if (Main.useMod) {
-				chance += VoltaicSlashMod.SURGING_CHARGE_PROC_CHANCE_BONUS * voltage.getStacks();
-			}
-			else {
-				chance += VoltaicSlash.SURGING_CHARGE_PROC_CHANCE_BONUS * voltage.getStacks();
-			}
 		}
 		return chance;
 	}
 
+	//Checks if the proc should activate
+	public void check(Player player, Target target, Hit hit, double time, int hitCount) {
+		//If not on ICD
+		if (isReady() && hit.ability != null && !hit.ability.getDamage().isForce) {
+
+			//Check chance
+			if (player.random.nextDouble() <= getProcChance()) {
+				handleProc(player, target, time);
+				lastActive = time; //reset timer for ICD
+			}
+		}
+	}
+	
 	//Handles the proc
-	public void handleProc(Player player, Target target, long time) {
+	public void handleProc(Player player, Target target, double time) {
 
 		//Add static charge
-		Effect sc = player.getEffect("Static Charge");
+		Effect sc = player.getEffect(Constants.Effects.StaticCharge);
 		sc.addStacks(1, time);
 
 		//Saber conduit
@@ -81,7 +88,7 @@ public class SurgingCharge extends Proc {
 		//Apply damage
 		Hit hit = getHitDamage(player);
 		if (hit.crit) {
-			Effect es = player.getEffect("Exploitive Strikes");
+			Effect es = player.getEffect(Constants.Effects.ExploitiveStrikes);
 			es.addStacks(1, player.sim.time());
 		}
 		target.applyHit(hit);
@@ -89,29 +96,20 @@ public class SurgingCharge extends Proc {
 
 	public Hit getHitDamage(Player player) {
 
-		Hit hit = new Hit(NAME, Calc.calculateDamage(player, player.sim.getTarget(), damage), false, damage.isForce);
+		Hit hit = new Hit(null, Calc.calculateDamage(player, player.sim.getTarget(), damage), false, damage.isForce, getName());
 
 		//Handle crits
-		double critChance = Calc.getForceCritChance(player);
-		Effect voltage = player.getEffect("Voltage");
-		if (voltage.isActive(player.sim.time())) {
-			if (Main.useMod) {
-				critChance += VoltaicSlashMod.VOLTAGE_FORCE_CRIT_BONUS * voltage.getStacks();
-			}
-			else {
-				critChance += VoltaicSlash.VOLTAGE_FORCE_CRIT_BONUS * voltage.getStacks();
-			}
-		}
+		double critChance = Calc.getCritChance(player);
 
 		boolean isCrit = player.random.nextDouble() <= critChance;
 		if (isCrit)
 		{
-			hit.damage *= Calc.getCriticalDamageMultiplier(player);
+			hit.damage *= Calc.getSuperCritMultiplier(player, critChance);
 			hit.crit = true;
 		}
 
 		//Handle overcharge saber damage bonus
-		Effect os = player.getEffect(OverchargeSaber.NAME);
+		Effect os = player.getEffect(Constants.Effects.OverchargeSaber);
 		if (os.isActive(player.sim.time())) {
 			hit.damage *= OverchargeSaber.SURGING_CHARGE_DAMAGE_MULTI;
 		}

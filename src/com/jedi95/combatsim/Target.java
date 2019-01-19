@@ -26,22 +26,26 @@ public class Target {
 	private int level;
 	private double health;
 	private double maxHealth;
-	private boolean hasArmorDebuff;
 	private double defenseChance;
+	private boolean _hasArmorDebuff;
+	private boolean _hasDamageTakenBuff;
+	private boolean _hasInternalDamageBuff;
 
 	public Simulator sim; //reference to simulator that created the target
 
-	public Target(int newLevel, double initialHealth, double dChance, Simulator sim1){
-		level = newLevel;
-		health = initialHealth;
-		maxHealth = initialHealth;
-		armorRating = 0.0;
-		hasArmorDebuff = false;
-		defenseChance = dChance;
-		sim = sim1;
+	public Target(int level, double initialHealth, double defenseChance, Simulator sim){
+		this.level = level;
+		this.health = initialHealth;
+		this.maxHealth = initialHealth;
+		this.armorRating = 0.0;
+		this.defenseChance = defenseChance;
+		this.sim = sim;
+		this._hasArmorDebuff = false;
+		this._hasDamageTakenBuff = false;
+		this._hasInternalDamageBuff = false;
 	}
 
-	public int getLevel(){
+	public int getLevel() {
 		return level;
 	}
 
@@ -50,7 +54,7 @@ public class Target {
 	}
 
 	public double getArmorRating(){
-		if (hasArmorDebuff){
+		if (_hasArmorDebuff){
 			return armorRating * 0.8;
 		}
 		else
@@ -67,12 +71,12 @@ public class Target {
 		armorRating = value;
 	}
 
-	public boolean isArmorDebuffed() {
-		return hasArmorDebuff;
+	public boolean hasArmorDebuff() {
+		return _hasArmorDebuff;
 	}
 
 	public void setArmorDebuff(boolean value){
-		hasArmorDebuff = value;
+		_hasArmorDebuff = value;
 	}
 
 	public void applyHit(Hit hit) {
@@ -86,5 +90,21 @@ public class Target {
 
 	public double getMaxHealth() {
 		return maxHealth;
+	}
+	
+	public boolean hasDamageTakenBuff() {
+		return _hasDamageTakenBuff;
+	}
+
+	public void setDamageTakenBuff(boolean value){
+		_hasDamageTakenBuff = value;
+	}
+	
+	public boolean hasInternalDamageBuff() {
+		return _hasInternalDamageBuff;
+	}
+
+	public void setInternalDamageBuff(boolean value){
+		_hasInternalDamageBuff = value;
 	}
 }

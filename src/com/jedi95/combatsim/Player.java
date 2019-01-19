@@ -21,27 +21,26 @@
 package com.jedi95.combatsim;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Random;
 
 public class Player {
 
 	//Balance constants
-	public static final int BASE_REGEN = 8 * Calc.FORCE_MULTI;
-	public static final double DARK_EMBRACE_FORCE_REGEN_MULTI = 1.5;
-	public static final int MAX_FORCE = 110 * Calc.FORCE_MULTI;
+	public static final double BASE_REGEN = 8;
+	public static final double DARK_EMBRACE_FORCE_REGEN_MULTI = 1.25;
+	public static final double MAX_FORCE = 100;
 
 	//Character constants
 	private int level;
 
 	//Character stats
-	private double willpower;
-	private double strength;
+	private double mastery;
 	private double power;
 	private double forcePower;
 	private double accuracy;
 	private double critRating;
-	private double surgeRating;
+	private double alacrityRating;
 	private double mainhandMinDmg;
 	private double mainhandMaxDmg;
 
@@ -49,7 +48,6 @@ public class Player {
 	private boolean hasWarriorBuff;
 	private boolean hasInquisitorBuff;
 	private boolean hasAgentBuff;
-	private boolean hasBountyHunterBuff;
 
 	//Companion buffs
 	private boolean compAccuracyBuff;
@@ -57,7 +55,6 @@ public class Player {
 	private boolean compCritBuff;
 
 	//Skill tree buffs
-	private double skillAccBuff;
 	private double armorPenetration;
 
 	//State
@@ -66,11 +63,12 @@ public class Player {
 	public Random random;
 	public Simulator sim; //reference to simulator that created the player
 
-	private int force; //stored as (force * 100) to prevent FP math errors
-	private HashMap<String, Effect> effects;
-	public ArrayList<Ability> abilities;
-	private HashMap<String, OffGCDAbility> offAbilities;
+	private double force;
+	private EnumMap<Constants.Effects, Effect> effects;
+	public EnumMap<Constants.Abilities, Ability> abilities;
+	private EnumMap<Constants.OffAbilities, OffGCDAbility> offAbilities;
 	public ArrayList<Proc> procs;
+	protected PhantomStride stride;
 
 	//Constructor
 	public Player(int newLevel, Simulator sim1){
@@ -78,9 +76,9 @@ public class Player {
 		sim = sim1;
 		random = new Random();
 		force = MAX_FORCE;
-		effects = new HashMap<String, Effect>();
-		abilities = new ArrayList<Ability>();
-		offAbilities= new HashMap<String, OffGCDAbility>();
+		effects = new EnumMap<Constants.Effects, Effect>(Constants.Effects.class);
+		abilities = new EnumMap<Constants.Abilities, Ability>(Constants.Abilities.class);
+		offAbilities= new EnumMap<Constants.OffAbilities, OffGCDAbility>(Constants.OffAbilities.class);
 		procs = new ArrayList<Proc>();
 	}
 
@@ -91,11 +89,11 @@ public class Player {
 	}
 
 	//stats
-	public double getWillpower() {
+	public double getMastery() {
 
 		//handle relic bonus
 		double bonus = 0.0;
-		Effect fr = getEffect(FRRelic.NAME);
+		Effect fr = getEffect(Constants.Effects.FRRelic);
 		if (fr.isActive(sim.time())) {
 			bonus = FRRelic.MAINSTAT_BOOST;
 		}
@@ -106,35 +104,23 @@ public class Player {
 			buffMulti = 1.05;
 		}
 
-		return (willpower + bonus) * buffMulti;
+		return (mastery + bonus) * buffMulti;
 	}
 
-	public void setWillpower(double value) {
-		willpower = value;
-	}
-
-	public double getStrength() {
-		double buffMulti = 1.0;
-		if (hasInquisitorBuff){
-			buffMulti = 1.05;
-		}
-		return strength * buffMulti;
-	}
-
-	public void setStrength(double value) {
-		strength = value;
+	public void setMastery(double value) {
+		mastery = value;
 	}
 
 	public double getPower() {
 		//Handle adrenal boost
 		double powerBonus = power;
-		Effect pow = getEffect(PowerAdrenal.NAME);
+		Effect pow = getEffect(Constants.Effects.PowerAdrenal);
 		if (pow.isActive(sim.time())) {
 			powerBonus += PowerAdrenal.POWER_BOOST;
 		}
 
 		//handle relic boost
-		Effect sa = getEffect(SARelic.NAME);
+		Effect sa = getEffect(Constants.Effects.SARelic);
 		if (sa.isActive(sim.time())) {
 			powerBonus += SARelic.POWER_BOOST;
 		}
@@ -154,28 +140,28 @@ public class Player {
 		forcePower = value;
 	}
 
-	public double getAccuracy() {
+	public double getAccuracyRating() {
 		return accuracy;
 	}
 
-	public void setAccuracy(double value) {
+	public void setAccuracyRating(double value) {
 		accuracy = value;
 	}
 
-	public double getCritRating() {
+	public double getCriticalRating() {
 		return critRating;
 	}
 
-	public void setCritRating(double value) {
+	public void setCriticalRating(double value) {
 		critRating = value;
 	}
 
-	public double getSurgeRating() {
-		return surgeRating;
+	public double getAlacrityRating() {
+		return alacrityRating;
 	}
 
-	public void setSurgeRating(double value) {
-		surgeRating = value;
+	public void setAlacrityRating(double value) {
+		alacrityRating = value;
 	}
 
 	public double getMainhandMinDmg() {
@@ -219,14 +205,6 @@ public class Player {
 		hasAgentBuff = value;
 	}
 
-	public boolean getBountyHunterBuff() {
-		return hasBountyHunterBuff;
-	}
-
-	public void setBountyHunterBuff(boolean value) {
-		hasBountyHunterBuff = value;
-	}
-
 	//companion buffs
 	public boolean getCompAccBuff() {
 		return compAccuracyBuff;
@@ -253,14 +231,6 @@ public class Player {
 	}
 
 	//Skill tree buffs
-	public double getSkillAccBuff() {
-		return skillAccBuff;
-	}
-
-	public void setSkillAccBuff(double value){
-		skillAccBuff = value;
-	}
-
 	public double getArmorPenetration() {
 		return armorPenetration;
 	}
@@ -270,37 +240,33 @@ public class Player {
 	}
 
 	//state access
-	public int getForce() {
+	public double getForce() {
 		return force;
 	}
 
-	public void consumeForce(int amount) {
+	public void consumeForce(double amount) {
 		force -= amount;
 	}
 
-	public void addForce(int amount) {
+	public void addForce(double amount) {
 		force += amount;
 		force = Math.min(force, MAX_FORCE); //cap force at maximum
 	}
 
-	public HashMap<String, Effect> getEffects() {
-		return effects;
-	}
-
-	public Effect getEffect(String name) {
+	public Effect getEffect(Constants.Effects name) {
 		return effects.get(name);
 	}
 
-	public void addEffect(Effect e) {
-		effects.put(e.getName(), e);
+	public void addEffect(Constants.Effects name, Effect e) {
+		effects.put(name, e);
 	}
 
-	public OffGCDAbility getOffAbility(String name) {
+	public OffGCDAbility getOffAbility(Constants.OffAbilities name) {
 		return offAbilities.get(name);
 	}
 
-	public void addOffAbility(OffGCDAbility a) {
-		offAbilities.put(a.getName(), a);
+	public void addOffAbility(Constants.OffAbilities name, OffGCDAbility a) {
+		offAbilities.put(name, a);
 	}
 
 	public Proc getProc(int index) {
@@ -327,12 +293,15 @@ public class Player {
 		}
 	}
 
-	public Ability getAbility(String name) {
-		for (Ability a : abilities) {
-			if (a.getName().equals(name)) {
-				return a;
-			}
-		}
-		return null;
+	public Ability getAbility(Constants.Abilities name) {
+		return abilities.get(name);
+	}
+	
+	public void setPhantomStride(PhantomStride stride) {
+		this.stride = stride;
+	}
+	
+	public PhantomStride getPhantomStride() {
+		return stride;
 	}
 }

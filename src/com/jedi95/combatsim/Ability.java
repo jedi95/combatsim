@@ -22,15 +22,15 @@ package com.jedi95.combatsim;
 
 public class Ability {
 
-	public static final double BELOW_30_PERCENT_DAMAGE_MULTI = 1.06;
-	public static final double EXPLOITIVE_STRIKES_CRIT_BONUS = 0.09;
+	public static final double BELOW_30_PERCENT_DAMAGE_MULTI = 1.03;
+	public static final double EXPLOITIVE_STRIKES_CRIT_BONUS = 0.05;
 	public static final double RECKLESSNESS_CRIT_BONUS = 0.6;
 
 	protected String name;
 	protected AbilityDamage damage;
-	protected int cooldown; //Cooldown is stored as miliseconds
-	protected int forceCost; //force values are stored as (force * FORCE_MULTI)
-	protected long lastUsedTime; //timestamp at last use, in ms since simulation start
+	protected double cooldown;
+	protected double forceCost;
+	protected double lastUsedTime;
 	protected double damageMulti;
 	protected double critBonus;
 	protected double surgeBonus;
@@ -38,12 +38,12 @@ public class Ability {
 
 	protected Player player;
 
-	public Ability(Player player1, String newName, int force, int cd, double dmgMulti, double criticalBonus, double surBonus, int numberOfHits){
+	public Ability(Player player1, String newName, double force, double cd, double dmgMulti, double criticalBonus, double surBonus, int numberOfHits) {
 		player = player1;
 		name = newName;
 		cooldown = cd;
-		forceCost = force * Calc.FORCE_MULTI;
-		lastUsedTime = -1000000;
+		forceCost = force;
+		lastUsedTime = -1000.0;
 		damageMulti = dmgMulti;
 		critBonus = criticalBonus;
 		surgeBonus = surBonus;
@@ -58,38 +58,36 @@ public class Ability {
 		return name;
 	}
 
-	public int getForceCost() {
+	public double getForceCost() {
 		return forceCost;
 	}
 
-	public int getCooldown() {
-		return cooldown;
+	public double getCooldown() {
+		return cooldown / Calc.getAlacrity(player);
 	}
 
 	public double getDamageMulti() {
-		return damageMulti;
+		Effect damageBonus = player.getEffect(Constants.Effects.StalkerDamageBonus);
+		if (damageBonus.isActive(player.sim.time())) {
+			return damageMulti + StalkerDamageBonus.DAMAGE_BONUS;
+		}
+		else
+		{
+			return damageMulti;
+		}
 	}
 
 	public double getCritBonus() {
 		double extraCrit = 0.0;
-		if (damage.getForce()){
-			Effect recklessness = player.getEffect("Recklessness");
-			Effect voltage = player.getEffect("Voltage");
+		if (damage.isForce){
+			Effect recklessness = player.getEffect(Constants.Effects.Recklessness);
 			if (recklessness.isActive(player.sim.time())) {
 				extraCrit += RECKLESSNESS_CRIT_BONUS;
-			}
-			if (voltage.isActive(player.sim.time())) {
-				if (Main.useMod) {
-					extraCrit += VoltaicSlashMod.VOLTAGE_FORCE_CRIT_BONUS * voltage.getStacks();
-				}
-				else {
-					extraCrit += VoltaicSlash.VOLTAGE_FORCE_CRIT_BONUS * voltage.getStacks();
-				}
 			}
 		}
 		else
 		{
-			Effect exploitiveStrikes = player.getEffect("Exploitive Strikes");
+			Effect exploitiveStrikes = player.getEffect(Constants.Effects.ExploitiveStrikes);
 			if (exploitiveStrikes.isActive(player.sim.time())){
 				extraCrit += EXPLOITIVE_STRIKES_CRIT_BONUS;
 			}
@@ -102,23 +100,17 @@ public class Ability {
 	}
 
 	public Hit calculateHitDamage(Player player, Target target) {
-		Hit hit = new Hit(getName(), Calc.calculateDamage(player, target, this.getDamage()) * getDamageMulti(), false, this.getDamage().isForce);
+		Hit hit = new Hit(this, Calc.calculateDamage(player, target, this.getDamage()) * getDamageMulti(), false, this.getDamage().isForce, getName());
 
 		//handle crits
 		double critChance = getCritBonus();
-		if (damage.isForce) {
-			critChance += Calc.getForceCritChance(player);
-		}
-		else
-		{
-			critChance += Calc.getMeleeCritChance(player);
-		}
+		critChance += Calc.getCritChance(player);
 
 		boolean isCrit = player.random.nextDouble() <= critChance;
 		if (isCrit)
 		{
 			hit.crit = true;
-			hit.damage *= Calc.getCriticalDamageMultiplier(player) + getSurgeBonus();
+			hit.damage *= Calc.getSuperCritMultiplier(player, critChance) + getSurgeBonus();
 		}
 
 		if (target.getHealth() <= target.getMaxHealth() * 0.30) {
@@ -130,7 +122,7 @@ public class Ability {
 
 	//Returns true if the ability is not currently on cooldown
 	public boolean isReady() {
-		return lastUsedTime + cooldown <= player.sim.time();
+		return lastUsedTime + getCooldown() <= player.sim.time();
 	}
 
 	//Returns true if we have sufficient force to use the ability
@@ -176,14 +168,7 @@ public class Ability {
 		Hit hit = calculateHitDamage(player, target);
 
 		//Calculate accuracy
-		double accuracy;
-		if (damage.isSpecial || damage.isForce){
-			accuracy = Calc.getSpecialAccuracy(player, target);
-		}
-		else
-		{
-			accuracy = Calc.getBasicAccuracy(player, target);
-		}
+		double accuracy = Calc.getAccuracy(player, target);
 
 		//Apply damage to target
 		for (int i = 0; i < hitCount; i++){

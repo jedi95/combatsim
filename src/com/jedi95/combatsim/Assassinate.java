@@ -22,40 +22,47 @@ package com.jedi95.combatsim;
 
 public class Assassinate extends Ability {
 
-	//Damage constants
-	public static final double standardHealthPercentMin = 0.309;
-	public static final double standardHealthPercentMax = 0.309;
-	public static final double coefficient = 3.09;
-	public static final double amountModifierPercent = 1.06;
-	public static final boolean IS_SPECIAL = true;
-	public static final boolean IS_FORCE = false;
-	public static final boolean IS_INTERNAL = false;
-
 	//Ability details
 	public static final String NAME = "Assassinate";
-	public static final int FORCE = 13;
-	public static final int COOLDOWN = 6000; //in ms
+	public static final double FORCE = 10;
+	public static final double COOLDOWN = 6;
 	public static final double DAMAGE_MULTI = 1.00;
 	public static final double CRITICAL_BONUS = 0.0;
 	public static final double SURGE_BONUS = 0.0;
 	public static final int HIT_COUNT = 1;
 	public static final double USABLE_HP_PERCENT = 0.3;
 
+	//Ability damage constants
+	public static final AbilityDamage DAMAGE = 
+			new AbilityDamage.AbilityDamageBuilder()
+			.standardHealthPercentMin(0.254)
+			.standardHealthPercentMax(0.254)
+			.coefficient(2.54)
+			.amountModifierPercent(0.7)
+			.isForce(false)
+			.isInternal(false)
+			.build();
+	
 	public Assassinate(Player player)
 	{
 		super(player, NAME, FORCE, COOLDOWN, DAMAGE_MULTI, CRITICAL_BONUS, SURGE_BONUS, HIT_COUNT);
-		damage = new AbilityDamage(standardHealthPercentMin, standardHealthPercentMax, coefficient, amountModifierPercent, IS_SPECIAL, IS_FORCE, IS_INTERNAL);
+		damage = Assassinate.DAMAGE;
 	}
 
+	public void consumeEffects() {
+		player.getEffect(Constants.Effects.StalkerCriticalBonus).resetStacks();
+	}
+	
 	//Need to override this to implement under 30% HP condition.
 	public boolean canUse(Target target) {
-		return forceOk() && isReady() && (target.getHealth() <= target.getMaxHealth() * USABLE_HP_PERCENT);
+		Effect reapersRush = player.getEffect(Constants.Effects.ReapersRush);
+		return forceOk() && isReady() && ((target.getHealth() <= target.getMaxHealth() * USABLE_HP_PERCENT) || reapersRush.isActive(player.sim.time()));
 	}
 
 	public void checkProcs(Target target, Hit hit, int hitCount) {
 
 		//Add induction
-		Effect induction = player.getEffect("Induction");
+		Effect induction = player.getEffect(Constants.Effects.Induction);
 		induction.addStacks(1, player.sim.time());
 
 		//Call global handler
@@ -66,12 +73,55 @@ public class Assassinate extends Ability {
 		if (!canUse(target)) {
 			return false;
 		}
-
-		Effect voltage = player.getEffect("Voltage");
-		//If voltage will fall off this GCD unless we use Voltaic Slash
-		if (voltage.getRemainingTime(player.sim.time()) <= Simulator.GCD_LENGTH) {
+		
+		double time = player.sim.time();
+		
+		//Check if voltage will fall off in the next 2 GCD
+		Effect voltage = player.getEffect(Constants.Effects.Voltage);
+		if (voltage.getRemainingTime(time) < player.sim.getGCDLength() * 2) {
 			return false;
 		}
+		
+		//Check if we need autocrit ASAP in opener
+		Effect autocrit = player.getEffect(Constants.Effects.StalkerCriticalBonus);
+		Proc autocritproc = player.getProc(3);
+		if (!autocrit.isActive(time) && autocritproc.isReady() && player.sim.time() < 10) {
+			return false;
+		}
+		
+		//Check if reaper's rush will expire and HP >30%
+		Effect reapersRush = player.getEffect(Constants.Effects.ReapersRush);
+		if (target.getHealth() > target.getMaxHealth() * USABLE_HP_PERCENT && reapersRush.getRemainingTime(time) <= (player.sim.getGCDLength() * 4)) {
+			return true;
+		}
+		
+		//If duplicity is close to 5 seconds remaining, and maul glowing
+		Effect duplicity = player.getEffect(Constants.Effects.Duplicity);
+		if (duplicity.isActive(time) && duplicity.getRemainingTime(time) <= 5 + (2 * player.sim.getGCDLength()))
+		{
+			return false;
+		}
+		
+		//If we can use reaping Strike, and target >30% HP
+		Ability reapingStrike = player.getAbility(Constants.Abilities.ReapingStrike);
+		if (target.getHealth() > target.getMaxHealth() * USABLE_HP_PERCENT && reapingStrike.canUse(target)) {
+			return false;
+		}
+		
+		//if we have autocrit and glowing maul
+		if (duplicity.isActive(time) && autocrit.isActive(time)) {
+			return false;
+		}
+		
 		return true;
+	}
+	
+	public double getCritBonus() {
+		double critBonus = super.getCritBonus();
+		boolean addSetBonusCrit = player.getEffect(Constants.Effects.StalkerCriticalBonus).isActive(player.sim.time());
+		if (addSetBonusCrit) {
+			critBonus += StalkerCriticalBonus.CRITICAL_CHANCE_BONUS;
+		}
+		return critBonus;
 	}
 }
