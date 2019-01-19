@@ -21,11 +21,21 @@
 package com.jedi95.combatsim;
 
 import java.lang.Math;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Calc {
 
 	//constant for level 70
 	public static final double BASE_DAMAGE = 7525;
+
+	//These don't change at all during a kill, so we cache them
+	private static Double cacheAlacrity = null;
+	private static Double cacheAccuracy = null;
+	private static Double cacheCritRating = null;
+
+	//These can change, but only have a few discreet values
+	private static Map<Double, Double> masteryCache = new HashMap<Double, Double>();
 
 	public static double getDamageReduction(Player player, Target target){
 		double targetArmor = target.getArmorRating() * Math.max(0.0, 1.0 - player.getArmorPenetration());
@@ -73,10 +83,18 @@ public class Calc {
 		}
 
 		//Add bonus from mastery
-		critChance += 0.2 * (1 - Math.pow((1 - (0.01 / 0.2)), (player.getMastery() / player.getLevel()) / 5.5));
+		Double cachedMasteryValue = masteryCache.get(player.getMastery());
+		if (cachedMasteryValue == null) {
+			cachedMasteryValue = 0.2 * (1 - Math.pow((1 - (0.01 / 0.2)), (player.getMastery() / player.getLevel()) / 5.5));
+			masteryCache.put(player.getMastery(), cachedMasteryValue);
+		}
+		critChance += cachedMasteryValue;
 
 		//Add bonus from crit rating
-		critChance += 0.3 * (1 - Math.pow((1 - (0.01 / 0.3)), (player.getCriticalRating() / player.getLevel()) / 0.8));
+		if (cacheCritRating == null) {
+			cacheCritRating = 0.3 * (1 - Math.pow((1 - (0.01 / 0.3)), (player.getCriticalRating() / player.getLevel()) / 0.8));
+		}
+		critChance += cacheCritRating;
 
 		return critChance;
 	}
@@ -92,7 +110,10 @@ public class Calc {
 		}
 
 		//Calculate bonus from crit rating
-		critMulti += 0.3 * (1 - Math.pow((1 - (0.01 / 0.3)), (player.getCriticalRating() / player.getLevel()) / 0.8));
+		if (cacheCritRating == null) {
+			cacheCritRating = 0.3 * (1 - Math.pow((1 - (0.01 / 0.3)), (player.getCriticalRating() / player.getLevel()) / 0.8));
+		}
+		critMulti += cacheCritRating;
 
 		return critMulti;
 	}
@@ -104,29 +125,37 @@ public class Calc {
 
 	//Accuracy 
 	public static double getAccuracy(Player player, Target target){
-		//Base 100% accuracy
-		double accuracy = 1.0;
 
-		//Add companion buff
-		if (player.getCompAccBuff()){
-			accuracy += 0.01;
+		if (cacheAccuracy == null) {
+			//Base 100% accuracy
+			double accuracy = 1.0;
+
+			//Add companion buff
+			if (player.getCompAccBuff()){
+				accuracy += 0.01;
+			}
+
+			//Add bonus from accuracy rating
+			accuracy += 0.3 * (1 - Math.pow((1 - (0.01 / 0.3)), (player.getAccuracyRating() / player.getLevel()) / 1));
+
+			cacheAccuracy = accuracy;
 		}
-		
-		//Add bonus from accuracy rating
-		accuracy += 0.3 * (1 - Math.pow((1 - (0.01 / 0.3)), (player.getAccuracyRating() / player.getLevel()) / 1));
 
-		return accuracy;
+		return cacheAccuracy;
 	}
 
 	public static double getAlacrity(Player player) {
-		
-		//Base alacrity is 1.0 or 100% normal speed
-		double alacrity = 1.0;
-		
-		//Add alacrity from alacrity rating
-		alacrity += 0.3 * (1 - Math.pow((1 - (0.01 / 0.3)), (player.getAlacrityRating() / player.getLevel()) / 1.25));
-		
-		return alacrity;
+
+		if (cacheAlacrity == null) {
+			//Base alacrity is 1.0 or 100% normal speed
+			double alacrity = 1.0;
+
+			//Add alacrity from alacrity rating
+			alacrity += 0.3 * (1 - Math.pow((1 - (0.01 / 0.3)), (player.getAlacrityRating() / player.getLevel()) / 1.25));
+
+			cacheAlacrity = alacrity;
+		}
+		return cacheAlacrity;
 	}
 	
 	public static double calculateDamage(Player player, Target target, AbilityDamage damage) {
