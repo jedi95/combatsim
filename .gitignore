@@ -5,3 +5,4 @@ bin/*
 .classpath
 .project
 combatsim.jar
+/bin/

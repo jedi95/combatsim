@@ -318,8 +318,8 @@ public class Main {
 	}
 
 	//Create target (values are for an ops training dummy)
-	public static Target createTarget(Simulator sim1) {
-		Target target = new Target(70, targetHP, 0.10, sim1);
+	public static Target createTarget(Simulator sim) {
+		Target target = new Target(70, targetHP, 0.10, sim);
 		target.setArmorRating(9475.0);
 		target.setArmorDebuff(useArmorDebuff);
 		target.setDamageTakenBuff(true);
@@ -330,7 +330,7 @@ public class Main {
 	//Creates a player
 	public static Player createPlayer(Simulator sim1) {
 		//create player
-		Player player = new Player(55, sim1);
+		Player player = new Player(70, sim1);
 
 		//set up player
 		//buffs
@@ -344,11 +344,10 @@ public class Main {
 		player.setCompSurgeBuff(true);
 
 		//Stats
-		//For the purpose of this simulator I'm using BIS Dread Forged.
+		//For the purpose of this simulator I'm using BIS 258
 		//This includes all buffs + datacrons and a blue Prototype Nano-Infused Resolve Stim.
 		//The values set here should not include class buffs, but should include stims.
-		//http://swtor.askmrrobot.com/character/219f9641-5e1e-4428-9a1e-b8fb5214b6a3
-		player.setMastery(7461.0);
+		player.setMastery(7106.0);
 		player.setPower(4936.0);
 		player.setForcePower(5480.0);
 		player.setAccuracyRating(746.0);
