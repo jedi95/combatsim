@@ -26,7 +26,9 @@ public class VoltaicSlash extends Ability {
 	public static final String NAME = "Voltaic Slash";
 	public static final double FORCE = 20;
 	public static final double COOLDOWN = 0;
-	public static final double DAMAGE_MULTI = 1.1; //From Thrashing blades + dominating slashes
+	//This should be 5% each from Thrashing blades + dominating slashes, but one is likely bugged.
+	//The numbers don't agree with parses on live otherwise.
+	public static final double DAMAGE_MULTI = 1.05; 
 	public static final double CRITICAL_BONUS = 0.0;
 	public static final double SURGE_BONUS = 0.0;
 	public static final int HIT_COUNT = 2;

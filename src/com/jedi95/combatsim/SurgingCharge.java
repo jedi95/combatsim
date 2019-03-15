@@ -96,7 +96,7 @@ public class SurgingCharge extends Proc {
 
 	public Hit getHitDamage(Player player) {
 
-		Hit hit = new Hit(null, Calc.calculateDamage(player, player.sim.getTarget(), damage), false, damage.isForce, getName());
+		Hit hit = new Hit(null, Calc.calculateDamage(player, player.sim.getTarget(), damage, 1.0), false, damage.isForce, getName());
 
 		//Handle crits
 		double critChance = Calc.getCritChance(player);

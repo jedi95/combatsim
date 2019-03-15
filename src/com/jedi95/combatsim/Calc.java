@@ -158,7 +158,7 @@ public class Calc {
 		return cacheAlacrity;
 	}
 	
-	public static double calculateDamage(Player player, Target target, AbilityDamage damage) {
+	public static double calculateDamage(Player player, Target target, AbilityDamage damage, double multiplier) {
 
 		//Calculate base ability damage
 		double AbilityDmgMin = damage.standardHealthPercentMin * BASE_DAMAGE;
@@ -197,12 +197,14 @@ public class Calc {
 		
 		//Handle damage bonuses
 		if (target.hasDamageTakenBuff()) {
-			damageOut *= 1.05;
+			multiplier += 0.05;
 		}
 		else if (target.hasInternalDamageBuff() && damage.isInternal) {
-			damageOut *= 1.07;
+			multiplier += 0.07;
 		}
 
+		damageOut *= multiplier;
+		
 		//Handle random damage within min/max
 		return damageOut;
 	}

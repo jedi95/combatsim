@@ -100,7 +100,7 @@ public class Ability {
 	}
 
 	public Hit calculateHitDamage(Player player, Target target) {
-		Hit hit = new Hit(this, Calc.calculateDamage(player, target, this.getDamage()) * getDamageMulti(), false, this.getDamage().isForce, getName());
+		Hit hit = new Hit(this, Calc.calculateDamage(player, target, this.getDamage(), getDamageMulti()), false, this.getDamage().isForce, getName());
 
 		//handle crits
 		double critChance = getCritBonus();

@@ -13,7 +13,7 @@ public class StalkerDamageBonus extends Proc {
 
 	//Checks if the proc should activate
 	public void check(Player player, Target target, Hit hit, double time, int hitCount) {
-		//Check if voltaic slash
+		//Check if ball lightning
 		if (lastActive + getCooldown() <= time && hit.ability != null && hit.ability == player.getAbility(Constants.Abilities.BallLightning)) {
 			handleProc(player, target, time);
 			lastActive = time; //reset timer for ICD

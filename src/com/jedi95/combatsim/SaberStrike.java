@@ -98,7 +98,7 @@ public class SaberStrike extends Ability {
 
 	//Need to override this so we can get non-crit damage
 	public Hit calculateHitDamage(Player player, Target target) {
-		Hit hit = new Hit(this, Calc.calculateDamage(player, target, this.getDamage()) * getDamageMulti(), false, this.getDamage().isForce, getName());
+		Hit hit = new Hit(this, Calc.calculateDamage(player, target, this.getDamage(), getDamageMulti()), false, this.getDamage().isForce, getName());
 
 		if (target.getHealth() <= target.getMaxHealth() * 0.30) {
 			hit.damage *= BELOW_30_PERCENT_DAMAGE_MULTI;
