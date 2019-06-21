@@ -198,15 +198,27 @@ public class Main {
 
 		//Print min/avg/max
 		System.out.println(String.format("100%% DPS: Min = %.2f  Avg = %.2f  Max = %.2f", dpsResults.get(0), finalStats.getDPS(), dpsResults.get(dpsResults.size() - 1)));
-		System.out.println(String.format("99%% DPS: Min = %.2f  Avg = %.2f  Max = %.2f", dpsResults.get(simCount / 100), finalStats.getDPS(), dpsResults.get(dpsResults.size() - (1 + simCount / 100))));
-		System.out.println(String.format("95%% DPS: Min = %.2f  Avg = %.2f  Max = %.2f", dpsResults.get(simCount / 20), finalStats.getDPS(), dpsResults.get(dpsResults.size() - (1 + simCount / 20))));
-		System.out.println(String.format("90%% DPS: Min = %.2f  Avg = %.2f  Max = %.2f", dpsResults.get(simCount / 10), finalStats.getDPS(), dpsResults.get(dpsResults.size() - (1 + simCount / 10))));
+		double averageDPS = calcAverage(simCount / 100, dpsResults.size() - (1 + simCount / 100));
+		System.out.println(String.format("99%% DPS: Min = %.2f  Avg = %.2f  Max = %.2f", dpsResults.get(simCount / 100), averageDPS, dpsResults.get(dpsResults.size() - (1 + simCount / 100))));
+		averageDPS = calcAverage(simCount / 20, dpsResults.size() - (1 + simCount / 20));
+		System.out.println(String.format("95%% DPS: Min = %.2f  Avg = %.2f  Max = %.2f", dpsResults.get(simCount / 20), averageDPS, dpsResults.get(dpsResults.size() - (1 + simCount / 20))));
+		averageDPS = calcAverage(simCount / 10, dpsResults.size() - (1 + simCount / 10));
+		System.out.println(String.format("90%% DPS: Min = %.2f  Avg = %.2f  Max = %.2f", dpsResults.get(simCount / 10), averageDPS, dpsResults.get(dpsResults.size() - (1 + simCount / 10))));
 
 		//Print simulation stats
 		long simsPerSecond = 1000 * simCount / timeTaken;
 		System.out.println(String.format("Simulation took %d ms  rate: %d/s\n", timeTaken, simsPerSecond));
 	}
 
+	private static double calcAverage(int startIndex, int endIndex) {
+		double average = 0;
+		for (int i = startIndex; i <= endIndex; i++) {
+			average += dpsResults.get(i);
+		}
+		average = average / ((endIndex - startIndex) + 1);
+		return average;
+	}
+	
 	//Generates the DPS scaling chart
 	public static void generateDPSScaling() throws Exception {
 
